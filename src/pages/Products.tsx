@@ -3,7 +3,11 @@ import { useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import productPowder from "@/assets/product-powder.jpg";
 
-const Products = () => {
+interface ProductsProps {
+  onBuyClick: () => void;
+}
+
+const Products = ({ onBuyClick }: ProductsProps) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const products = [
     "Sodium Chloride",
@@ -110,8 +114,11 @@ const Products = () => {
                     </div>
                   </div>
 
-                  <Button className="w-full bg-primary hover:bg-primary-hover text-primary-foreground font-medium">
-                    Request Quote
+                  <Button 
+                    onClick={onBuyClick}
+                    className="w-full bg-primary hover:bg-primary-hover text-primary-foreground font-medium uppercase tracking-wide"
+                  >
+                    Buy Product
                   </Button>
                 </div>
               </div>
