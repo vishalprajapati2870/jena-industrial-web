@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
@@ -9,6 +9,20 @@ interface NavbarProps {
 
 export const Navbar = ({ onBuyClick }: NavbarProps) => {
   const [productsOpen, setProductsOpen] = useState(false);
+  const hoverTimeoutRef = useRef<number | null>(null);
+
+  const handleProductsMouseEnter = () => {
+    if (hoverTimeoutRef.current) {
+      window.clearTimeout(hoverTimeoutRef.current);
+    }
+    setProductsOpen(true);
+  };
+
+  const handleProductsMouseLeave = () => {
+    hoverTimeoutRef.current = window.setTimeout(() => {
+      setProductsOpen(false);
+    }, 150);
+  };
 
   const products = [
     "Sodium Chloride",
@@ -50,8 +64,8 @@ export const Navbar = ({ onBuyClick }: NavbarProps) => {
             {/* Products Dropdown */}
             <div
               className="relative"
-              onMouseEnter={() => setProductsOpen(true)}
-              onMouseLeave={() => setProductsOpen(false)}
+              onMouseEnter={handleProductsMouseEnter}
+              onMouseLeave={handleProductsMouseLeave}
             >
               <button
                 type="button"
