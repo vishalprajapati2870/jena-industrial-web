@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import productPowder from "@/assets/product-powder.jpg";
 
 const Products = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const products = [
     "Sodium Chloride",
     "Calcium Carbonate",
@@ -14,7 +16,19 @@ const Products = () => {
     "Iron Oxide",
   ];
 
-  const [selectedProduct, setSelectedProduct] = useState(products[0]);
+  const productFromUrl = searchParams.get("product");
+  const initialProduct = productFromUrl && products.includes(productFromUrl) 
+    ? productFromUrl 
+    : products[0];
+  
+  const [selectedProduct, setSelectedProduct] = useState(initialProduct);
+
+  useEffect(() => {
+    const productParam = searchParams.get("product");
+    if (productParam && products.includes(productParam)) {
+      setSelectedProduct(productParam);
+    }
+  }, [searchParams]);
 
   const productDetails = {
     packaging: "25 kg bags, 50 kg drums",
@@ -38,7 +52,10 @@ const Products = () => {
               {products.map((product, idx) => (
                 <button
                   key={idx}
-                  onClick={() => setSelectedProduct(product)}
+                  onClick={() => {
+                    setSelectedProduct(product);
+                    setSearchParams({ product });
+                  }}
                   className={`w-full text-left px-4 py-4 border-b border-border last:border-b-0 transition-colors ${
                     selectedProduct === product
                       ? "bg-primary text-primary-foreground font-medium"
@@ -137,7 +154,10 @@ const Products = () => {
                   <div
                     key={idx}
                     className="bg-card border border-border rounded-lg overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
-                    onClick={() => setSelectedProduct(product)}
+                    onClick={() => {
+                      setSelectedProduct(product);
+                      setSearchParams({ product });
+                    }}
                   >
                     <img
                       src={productPowder}
