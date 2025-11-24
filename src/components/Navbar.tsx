@@ -63,8 +63,9 @@ export const Navbar = ({ onBuyClick }: NavbarProps) => {
                   {products.map((product, idx) => (
                     <Link
                       key={idx}
-                      to="/products"
+                      to={`/products?product=${encodeURIComponent(product)}`}
                       className="block px-4 py-3 text-sm text-body-text hover:bg-muted hover:text-primary transition-colors border-b border-border last:border-b-0"
+                      onClick={() => setProductsOpen(false)}
                     >
                       {product}
                     </Link>
