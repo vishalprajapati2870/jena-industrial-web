@@ -55,11 +55,11 @@ export const Navbar = ({ onBuyClick }: NavbarProps) => {
             >
               <button className="text-navbar-text font-medium hover:text-primary transition-colors flex items-center gap-1">
                 Products
-                <ChevronDown className="w-4 h-4" />
+                <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${productsOpen ? 'rotate-180' : ''}`} />
               </button>
               
               {productsOpen && (
-                <div className="absolute top-full left-0 mt-2 w-64 bg-background border border-border rounded-lg shadow-lg animate-fade-in z-50 max-h-80 overflow-y-auto">
+                <div className="absolute top-full left-0 mt-2 w-64 bg-background border border-border rounded-lg shadow-lg overflow-hidden z-50 max-h-80 overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-200">
                   {products.map((product, idx) => (
                     <Link
                       key={idx}
