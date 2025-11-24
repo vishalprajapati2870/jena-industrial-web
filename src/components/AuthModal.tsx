@@ -33,11 +33,11 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
       </div>
 
       {/* Glassmorphism Card */}
-      <div className="relative w-full max-w-[520px] bg-black/45 backdrop-blur-[22px] rounded-3xl shadow-[0_12px_40px_rgba(0,0,0,0.45)] border border-white/10 p-8">
+      <div className="relative w-full max-w-md bg-black/45 backdrop-blur-[22px] rounded-3xl shadow-[0_12px_40px_rgba(0,0,0,0.45)] border border-white/10 p-6">
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-white/60 hover:text-white transition-colors"
+          className="absolute top-4 right-4 text-white/60 hover:text-white transition-all hover:shadow-[0_0_20px_rgba(255,255,255,0.6)] rounded-full"
         >
           <X className="w-6 h-6" />
         </button>
@@ -67,19 +67,19 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
         </div>
 
         {/* Title */}
-        <h2 className="text-2xl font-semibold text-white mb-6">
+        <h2 className="text-xl font-semibold text-white mb-5">
           {isSignUp ? "Create an account" : "Welcome back"}
         </h2>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-3">
           {isSignUp && (
             <Input
               type="text"
               placeholder="Full Name"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className="h-14 bg-white/8 border-white/14 rounded-xl text-white placeholder:text-white/40 focus:border-white/40"
+              className="h-12 bg-white/90 border-white/20 rounded-xl text-gray-900 placeholder:text-gray-500 focus:border-white/40 focus:bg-white"
             />
           )}
           
@@ -88,7 +88,7 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
             placeholder="Email"
             value={formData.email}
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-            className="h-14 bg-white/8 border-white/14 rounded-xl text-white placeholder:text-white/40 focus:border-white/40"
+            className="h-12 bg-white/90 border-white/20 rounded-xl text-gray-900 placeholder:text-gray-500 focus:border-white/40 focus:bg-white"
           />
 
           {isSignUp && (
@@ -97,7 +97,7 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
               placeholder="(XXX) XXX-XXXX"
               value={formData.phone}
               onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-              className="h-14 bg-white/8 border-white/14 rounded-xl text-white placeholder:text-white/40 focus:border-white/40"
+              className="h-12 bg-white/90 border-white/20 rounded-xl text-gray-900 placeholder:text-gray-500 focus:border-white/40 focus:bg-white"
             />
           )}
 
@@ -106,13 +106,13 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
             placeholder="Password"
             value={formData.password}
             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-            className="h-14 bg-white/8 border-white/14 rounded-xl text-white placeholder:text-white/40 focus:border-white/40"
+            className="h-12 bg-white/90 border-white/20 rounded-xl text-gray-900 placeholder:text-gray-500 focus:border-white/40 focus:bg-white"
           />
 
           {/* Submit Button */}
           <Button
             type="submit"
-            className="w-full h-14 bg-gradient-to-r from-white to-gray-200 text-black font-bold rounded-full hover:shadow-[0_0_30px_rgba(255,255,255,0.4)] transition-all"
+            className="w-full h-12 bg-gradient-to-r from-white to-gray-200 text-black font-bold rounded-full hover:shadow-[0_0_30px_rgba(255,255,255,0.4)] transition-all"
           >
             {isSignUp ? "Create Account" : "Sign In"}
           </Button>
