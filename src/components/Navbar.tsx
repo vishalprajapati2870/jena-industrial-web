@@ -2,7 +2,6 @@ import { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
-import jenaLogo from "@/assets/jena-marketing-logo.png";
 
 interface NavbarProps {
   onBuyClick: () => void;
@@ -42,7 +41,9 @@ export const Navbar = ({ onBuyClick }: NavbarProps) => {
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
           <Link to="/" className="flex items-center">
-            <img src={jenaLogo} alt="Jena Marketing" className="h-12 w-auto" />
+            <span className="text-2xl font-heading font-bold text-primary">
+              Jena Marketing
+            </span>
           </Link>
 
           {/* Center Menu */}
