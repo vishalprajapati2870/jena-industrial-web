@@ -36,7 +36,7 @@ export const Navbar = ({ onBuyClick }: NavbarProps) => {
   ];
 
   return (
-    <nav className="bg-background/30 backdrop-blur-md border-b border-border/20 sticky top-0 z-50">
+    <nav className="bg-background border-b border-border sticky top-0 z-50 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
@@ -79,7 +79,7 @@ export const Navbar = ({ onBuyClick }: NavbarProps) => {
 
               {productsOpen && (
                 <div
-                  className="absolute top-full left-0 mt-2 w-64 bg-background/70 backdrop-blur-md border border-border/30 rounded-lg shadow-lg overflow-hidden z-50 max-h-80 overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-200"
+                  className="absolute top-full left-0 mt-2 w-64 bg-background border border-border rounded-lg shadow-lg overflow-hidden z-50 max-h-80 overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-200"
                 >
                   {products.map((product, idx) => (
                     <Link
