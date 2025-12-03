@@ -2,6 +2,7 @@ import { useState } from "react";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -16,13 +17,20 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
     phone: "",
     password: "",
   });
+  const { toast } = useToast();
 
   if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
-    // Handle authentication logic here
+    toast({
+      title: isSignUp ? "Account Created!" : "Signed In!",
+      description: isSignUp 
+        ? "Welcome to Jena Marketing. Your account has been created." 
+        : "Welcome back! You have successfully signed in.",
+    });
+    setFormData({ name: "", email: "", phone: "", password: "" });
+    onClose();
   };
 
   return (
