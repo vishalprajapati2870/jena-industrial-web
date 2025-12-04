@@ -39,11 +39,11 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose}></div>
 
       {/* Card */}
-      <div className="relative w-full max-w-md bg-white rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.25)] p-6">
+      <div className="relative w-full max-w-md bg-white rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.25)] p-6 pt-12">
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-primary transition-all hover:shadow-[0_0_20px_rgba(20,184,166,0.6)] rounded-full p-1"
+          className="absolute top-3 right-3 text-gray-400 hover:text-primary transition-all hover:bg-gray-100 rounded-full p-2 z-10"
         >
           <X className="w-5 h-5" />
         </button>
