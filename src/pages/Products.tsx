@@ -1,7 +1,11 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import productPowder from "@/assets/product-powder.jpg";
+import productPowder from "@/assets/SILVER JUMBO CAKE.jpeg";
+import SILVERJUMBOCAKE from "@/assets/SILVER JUMBO CAKE.jpeg";
+ 
+
+
 
 interface ProductsProps {
   onBuyClick: () => void;
@@ -10,14 +14,18 @@ interface ProductsProps {
 const Products = ({ onBuyClick }: ProductsProps) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const products = [
-    "Sodium Chloride",
-    "Calcium Carbonate",
-    "Potassium Hydroxide",
-    "Magnesium Sulfate",
-    "Ammonium Nitrate",
-    "Zinc Oxide",
-    "Copper Sulfate",
-    "Iron Oxide",
+    "Jambo Silver Detergent Cake",
+    "New Silver Detergent Cake",
+    "Wonder Silver Detergent Cake ",
+    "Blue Silver Detergent Cake",
+    "Jambo Ultra White Silver Detergent Cake",
+    "Yellow Silver Detergent Cake",
+    "Orange Silver Detergent Cake",
+    "Herbal Silver Detergent Cake",
+    "Dayawan Silver Detergent Cake",
+    "Chetak Silver Detergent Cake",
+    "Talati Silver Detergent Cake",
+    "Semi Silver Detergent Cake",
   ];
 
   const productFromUrl = searchParams.get("product");
@@ -35,13 +43,13 @@ const Products = ({ onBuyClick }: ProductsProps) => {
   }, [searchParams]);
 
   const productDetails = {
-    packaging: "25 kg bags, 50 kg drums",
+    packaging: "180 gms*30 cake",
     purity: "99.5% min",
     cas: "7647-14-5",
     formula: "NaCl",
     appearance: "White crystalline powder",
     solubility: "Soluble in water",
-    price: "$150",
+    price: "10 ₹",
   };
 
   return (
@@ -92,7 +100,7 @@ const Products = ({ onBuyClick }: ProductsProps) => {
                   </h2>
                   <div className="mb-6">
                     <span className="text-3xl font-bold text-primary">{productDetails.price}</span>
-                    <span className="text-body-text ml-2">/ unit</span>
+                    <span className="text-body-text ml-2">/cake </span>
                   </div>
 
                   <div className="space-y-3 mb-6">

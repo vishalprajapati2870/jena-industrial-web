@@ -8,9 +8,9 @@ export const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Company Info */}
           <div>
-            <h3 className="text-xl font-heading font-bold mb-4">Jena Marketing</h3>
+            <h3 className="text-xl font-heading font-bold mb-4">Naval Soap Factory</h3>
             <p className="text-sm leading-relaxed opacity-90">
-              Leading provider of high-quality industrial chemicals with a commitment
+              Leading provider of high-quality industrial detergent cake with a commitment
               to excellence, innovation, and sustainable manufacturing practices.
               Trusted by industries worldwide.
             </p>
@@ -49,18 +49,18 @@ export const Footer = () => {
             <div className="space-y-3 mb-4">
               <div className="flex items-start gap-2">
                 <MapPin className="w-4 h-4 mt-1 flex-shrink-0" />
-                <p className="text-sm">123 Industrial Avenue, Chemical District, State 12345</p>
+                <p className="text-sm">6/D/1, Anand Industrial Estate, Borsad Road, ANAND - 388 001. (Guj.)</p>
               </div>
               <div className="flex items-center gap-2">
                 <Mail className="w-4 h-4 flex-shrink-0" />
-                <a href="mailto:info@jenamarketing.com" className="text-sm hover:text-primary">
-                  info@jenamarketing.com
+                <a href="mailto:info@navalsoap@yahoo.com" className="text-sm hover:text-primary">
+                navalsoap@yahoo.com
                 </a>
               </div>
               <div className="flex items-center gap-2">
                 <Phone className="w-4 h-4 flex-shrink-0" />
-                <a href="tel:+1234567890" className="text-sm hover:text-primary">
-                  +1 (234) 567-890
+                <a href="tel:+91 9825805478" className="text-sm hover:text-primary">
+                  +91 98258 05478
                 </a>
               </div>
             </div>
@@ -82,7 +82,7 @@ export const Footer = () => {
 
         <div className="border-t border-secondary-foreground/20 mt-8 pt-6 text-center">
           <p className="text-sm opacity-80">
-            © {new Date().getFullYear()} Jena Marketing. All rights reserved.
+            © {new Date().getFullYear()} Naval Soap Factory. All rights reserved.
           </p>
         </div>
       </div>

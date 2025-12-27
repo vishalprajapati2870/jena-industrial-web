@@ -25,14 +25,18 @@ export const Navbar = ({ onBuyClick }: NavbarProps) => {
   };
 
   const products = [
-    "Sodium Chloride",
-    "Calcium Carbonate",
-    "Potassium Hydroxide",
-    "Magnesium Sulfate",
-    "Ammonium Nitrate",
-    "Zinc Oxide",
-    "Copper Sulfate",
-    "Iron Oxide",
+    "Jambo Silver Detergent Cake",
+    "New Silver Detergent Cake",
+    "Wonder Silver Detergent Cake ",
+    "Blue Silver Detergent Cake",
+    "Jambo Ultra White Silver Detergent Cake",
+    "Yellow Silver Detergent Cake",
+    "Orange Silver Detergent Cake",
+    "Herbal Silver Detergent Cake",
+    "Dayawan Silver Detergent Cake",
+    "Chetak Silver Detergent Cake",
+    "Talati Silver Detergent Cake",
+    "Semi Silver Detergent Cake",
   ];
 
   return (
@@ -42,7 +46,7 @@ export const Navbar = ({ onBuyClick }: NavbarProps) => {
           {/* Logo */}
           <Link to="/" className="flex items-center">
             <span className="text-2xl font-heading font-bold text-primary">
-              Jena Marketing
+              Naval Soap Factory
             </span>
           </Link>
 

@@ -4,8 +4,8 @@ import { CheckCircle, Award, Shield, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 import heroImage from "@/assets/hero-chemical-powder.jpg";
 import qualityImage from "@/assets/quality-assurance.jpg";
-import productPowder from "@/assets/product-powder.jpg";
-import productGranules from "@/assets/product-granules.jpg";
+import productPowder from "@/assets/SILVER JUMBO CAKE.jpeg";
+import productGranules from "@/assets/SILVER SEMI CAKE.jpeg";
 
 const Home = () => {
   const features = [
@@ -43,10 +43,10 @@ const Home = () => {
         </div>
         <div className="relative z-10 text-center text-white max-w-3xl px-4">
           <h1 className="text-5xl md:text-6xl font-heading font-bold mb-6">
-            Welcome to Jena Marketing
+            Welcome to Naval Soap Factory
           </h1>
           <p className="text-xl md:text-2xl mb-8 font-light">
-            Your trusted partner in premium industrial chemical solutions
+            Your trusted partner in premium industrial detergent cake
           </p>
           <Link to="/products">
             <Button className="bg-primary hover:bg-primary-hover text-primary-foreground font-medium px-8 py-6 text-lg">
@@ -80,7 +80,7 @@ const Home = () => {
                 Quality Assurance
               </h2>
               <p className="text-body-text text-lg leading-relaxed mb-6">
-                At Jena Marketing, quality is our top priority. Every product
+                At Naval Soap Factory, quality is our top priority. Every product
                 undergoes rigorous testing and quality control procedures to ensure
                 it meets the highest industry standards. Our state-of-the-art
                 laboratory facilities and experienced team guarantee consistent
