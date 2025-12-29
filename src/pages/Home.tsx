@@ -78,28 +78,28 @@ const Home = () => {
         <div className="relative">
           <div className="flex animate-marquee gap-8 hover:[animation-play-state:paused]">
             {[
-              { image: SILVER_JUMBO, title: "Silver Jumbo Cake" },
-              { image: SILVER_NEW, title: "Silver New Cake" },
-              { image: SILVER_SEMI, title: "Silver Semi Cake" },
-              { image: SILVER_BLUE, title: "Silver Blue Cake" },
-              { image: SILVER_ORANGE, title: "Silver Orange Cake" },
-              { image: SILVER_YELLOW, title: "Silver Yellow Cake" },
-              { image: SILVER_HERBAL, title: "Silver Herbal Cake" },
-              { image: SILVER_WONDER, title: "Silver Wonder Cake" },
-              { image: SILVER_ULTRA, title: "Silver Ultra White" },
-              { image: CHETAK, title: "Chetak Cake" },
-              { image: DAYAWAN, title: "Dayawan Cake" },
-              { image: TALATI, title: "Talati Cake" },
+              { image: SILVER_JUMBO, title: "Silver Jumbo Cake", name: "Silver Jumbo Cake" },
+              { image: SILVER_NEW, title: "Silver New Cake", name: "Silver New Cake" },
+              { image: SILVER_SEMI, title: "Silver Semi Cake", name: "Silver Semi Cake" },
+              { image: SILVER_BLUE, title: "Silver Blue Cake", name: "Silver Blue Cake" },
+              { image: SILVER_ORANGE, title: "Silver Orange Cake", name: "Silver Orange Cake" },
+              { image: SILVER_YELLOW, title: "Silver Yellow Cake", name: "Silver Yellow Cake" },
+              { image: SILVER_HERBAL, title: "Silver Herbal Cake", name: "Silver Herbal Cake" },
+              { image: SILVER_WONDER, title: "Silver Wonder Cake", name: "Silver Wonder Cake" },
+              { image: SILVER_ULTRA, title: "Silver Ultra White", name: "Silver Ultra White" },
+              { image: CHETAK, title: "Chetak Cake", name: "Chetak Cake" },
+              { image: DAYAWAN, title: "Dayawan Cake", name: "Dayawan Cake" },
+              { image: TALATI, title: "Talati Cake", name: "Talati Cake" },
               // Duplicate for seamless loop
-              { image: SILVER_JUMBO, title: "Silver Jumbo Cake" },
-              { image: SILVER_NEW, title: "Silver New Cake" },
-              { image: SILVER_SEMI, title: "Silver Semi Cake" },
-              { image: SILVER_BLUE, title: "Silver Blue Cake" },
-              { image: SILVER_ORANGE, title: "Silver Orange Cake" },
-              { image: SILVER_YELLOW, title: "Silver Yellow Cake" },
+              { image: SILVER_JUMBO, title: "Silver Jumbo Cake", name: "Silver Jumbo Cake" },
+              { image: SILVER_NEW, title: "Silver New Cake", name: "Silver New Cake" },
+              { image: SILVER_SEMI, title: "Silver Semi Cake", name: "Silver Semi Cake" },
+              { image: SILVER_BLUE, title: "Silver Blue Cake", name: "Silver Blue Cake" },
+              { image: SILVER_ORANGE, title: "Silver Orange Cake", name: "Silver Orange Cake" },
+              { image: SILVER_YELLOW, title: "Silver Yellow Cake", name: "Silver Yellow Cake" },
             ].map((product, idx) => (
               <div key={idx} className="flex-shrink-0 w-64">
-                <ProductCard image={product.image} title={product.title} />
+                <ProductCard image={product.image} title={product.title} productName={product.name} />
               </div>
             ))}
           </div>
