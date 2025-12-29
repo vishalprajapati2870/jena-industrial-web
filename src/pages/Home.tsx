@@ -78,25 +78,25 @@ const Home = () => {
         <div className="relative">
           <div className="flex animate-marquee gap-8 hover:[animation-play-state:paused]">
             {[
-              { image: SILVER_JUMBO, title: "Silver Jumbo Cake", name: "Silver Jumbo Cake" },
-              { image: SILVER_NEW, title: "Silver New Cake", name: "Silver New Cake" },
-              { image: SILVER_SEMI, title: "Silver Semi Cake", name: "Silver Semi Cake" },
-              { image: SILVER_BLUE, title: "Silver Blue Cake", name: "Silver Blue Cake" },
-              { image: SILVER_ORANGE, title: "Silver Orange Cake", name: "Silver Orange Cake" },
-              { image: SILVER_YELLOW, title: "Silver Yellow Cake", name: "Silver Yellow Cake" },
-              { image: SILVER_HERBAL, title: "Silver Herbal Cake", name: "Silver Herbal Cake" },
-              { image: SILVER_WONDER, title: "Silver Wonder Cake", name: "Silver Wonder Cake" },
-              { image: SILVER_ULTRA, title: "Silver Ultra White", name: "Silver Ultra White" },
-              { image: CHETAK, title: "Chetak Cake", name: "Chetak Cake" },
-              { image: DAYAWAN, title: "Dayawan Cake", name: "Dayawan Cake" },
-              { image: TALATI, title: "Talati Cake", name: "Talati Cake" },
+              { image: SILVER_JUMBO, title: "Jambo Silver Detergent Cake", name: "Jambo Silver Detergent Cake" },
+              { image: SILVER_NEW, title: "New Silver Detergent Cake", name: "New Silver Detergent Cake" },
+              { image: SILVER_SEMI, title: "Semi Silver Detergent Cake", name: "Semi Silver Detergent Cake" },
+              { image: SILVER_BLUE, title: "Blue Silver Detergent Cake", name: "Blue Silver Detergent Cake" },
+              { image: SILVER_ORANGE, title: "Orange Silver Detergent Cake", name: "Orange Silver Detergent Cake" },
+              { image: SILVER_YELLOW, title: "Yellow Silver Detergent Cake", name: "Yellow Silver Detergent Cake" },
+              { image: SILVER_HERBAL, title: "Herbal Silver Detergent Cake", name: "Herbal Silver Detergent Cake" },
+              { image: SILVER_WONDER, title: "Wonder Silver Detergent Cake", name: "Wonder Silver Detergent Cake" },
+              { image: SILVER_ULTRA, title: "Jambo Ultra White Silver Detergent Cake", name: "Jambo Ultra White Silver Detergent Cake" },
+              { image: CHETAK, title: "Chetak Silver Detergent Cake", name: "Chetak Silver Detergent Cake" },
+              { image: DAYAWAN, title: "Dayawan Silver Detergent Cake", name: "Dayawan Silver Detergent Cake" },
+              { image: TALATI, title: "Talati Silver Detergent Cake", name: "Talati Silver Detergent Cake" },
               // Duplicate for seamless loop
-              { image: SILVER_JUMBO, title: "Silver Jumbo Cake", name: "Silver Jumbo Cake" },
-              { image: SILVER_NEW, title: "Silver New Cake", name: "Silver New Cake" },
-              { image: SILVER_SEMI, title: "Silver Semi Cake", name: "Silver Semi Cake" },
-              { image: SILVER_BLUE, title: "Silver Blue Cake", name: "Silver Blue Cake" },
-              { image: SILVER_ORANGE, title: "Silver Orange Cake", name: "Silver Orange Cake" },
-              { image: SILVER_YELLOW, title: "Silver Yellow Cake", name: "Silver Yellow Cake" },
+              { image: SILVER_JUMBO, title: "Jambo Silver Detergent Cake", name: "Jambo Silver Detergent Cake" },
+              { image: SILVER_NEW, title: "New Silver Detergent Cake", name: "New Silver Detergent Cake" },
+              { image: SILVER_SEMI, title: "Semi Silver Detergent Cake", name: "Semi Silver Detergent Cake" },
+              { image: SILVER_BLUE, title: "Blue Silver Detergent Cake", name: "Blue Silver Detergent Cake" },
+              { image: SILVER_ORANGE, title: "Orange Silver Detergent Cake", name: "Orange Silver Detergent Cake" },
+              { image: SILVER_YELLOW, title: "Yellow Silver Detergent Cake", name: "Yellow Silver Detergent Cake" },
             ].map((product, idx) => (
               <div key={idx} className="flex-shrink-0 w-64">
                 <ProductCard image={product.image} title={product.title} productName={product.name} />
