@@ -1,8 +1,20 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import productPowder from "@/assets/SILVER JUMBO CAKE.jpeg";
-import SILVERJUMBOCAKE from "@/assets/SILVER JUMBO CAKE.jpeg";
+
+// Import all product images
+import SILVER_JUMBO from "@/assets/SILVER JUMBO CAKE.jpeg";
+import SILVER_NEW from "@/assets/SILVER NEW CAKE.jpeg";
+import SILVER_WONDER from "@/assets/SILVER WONDER CAKE.jpeg";
+import SILVER_BLUE from "@/assets/SILVER BLUE CAKE.jpeg";
+import SILVER_ULTRA from "@/assets/SILVER ULTRA WHITE.jpeg";
+import SILVER_YELLOW from "@/assets/SILVER YELLOW CAKE.jpeg";
+import SILVER_ORANGE from "@/assets/SILVER ORANGE CAKE.jpeg";
+import SILVER_HERBAL from "@/assets/SILVER HERBAL CAKE.jpeg";
+import DAYAWAN from "@/assets/DAYAWAN CAKE.jpeg";
+import CHETAK from "@/assets/CHETAK CAKE.jpeg";
+import TALATI from "@/assets/TALATI CAKE.jpeg";
+import SILVER_SEMI from "@/assets/SILVER SEMI CAKE.jpeg";
  
 
 
@@ -14,31 +26,30 @@ interface ProductsProps {
 const Products = ({ onBuyClick }: ProductsProps) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const products = [
-    "Jambo Silver Detergent Cake",
-    "New Silver Detergent Cake",
-    "Wonder Silver Detergent Cake ",
-    "Blue Silver Detergent Cake",
-    "Jambo Ultra White Silver Detergent Cake",
-    "Yellow Silver Detergent Cake",
-    "Orange Silver Detergent Cake",
-    "Herbal Silver Detergent Cake",
-    "Dayawan Silver Detergent Cake",
-    "Chetak Silver Detergent Cake",
-    "Talati Silver Detergent Cake",
-    "Semi Silver Detergent Cake",
+    { name: "Jambo Silver Detergent Cake", image: SILVER_JUMBO },
+    { name: "New Silver Detergent Cake", image: SILVER_NEW },
+    { name: "Wonder Silver Detergent Cake", image: SILVER_WONDER },
+    { name: "Blue Silver Detergent Cake", image: SILVER_BLUE },
+    { name: "Jambo Ultra White Silver Detergent Cake", image: SILVER_ULTRA },
+    { name: "Yellow Silver Detergent Cake", image: SILVER_YELLOW },
+    { name: "Orange Silver Detergent Cake", image: SILVER_ORANGE },
+    { name: "Herbal Silver Detergent Cake", image: SILVER_HERBAL },
+    { name: "Dayawan Silver Detergent Cake", image: DAYAWAN },
+    { name: "Chetak Silver Detergent Cake", image: CHETAK },
+    { name: "Talati Silver Detergent Cake", image: TALATI },
+    { name: "Semi Silver Detergent Cake", image: SILVER_SEMI },
   ];
 
   const productFromUrl = searchParams.get("product");
-  const initialProduct = productFromUrl && products.includes(productFromUrl) 
-    ? productFromUrl 
-    : products[0];
+  const initialProduct = products.find(p => p.name === productFromUrl) || products[0];
   
   const [selectedProduct, setSelectedProduct] = useState(initialProduct);
 
   useEffect(() => {
     const productParam = searchParams.get("product");
-    if (productParam && products.includes(productParam)) {
-      setSelectedProduct(productParam);
+    const found = products.find(p => p.name === productParam);
+    if (found) {
+      setSelectedProduct(found);
     }
   }, [searchParams]);
 
@@ -66,15 +77,15 @@ const Products = ({ onBuyClick }: ProductsProps) => {
                   key={idx}
                   onClick={() => {
                     setSelectedProduct(product);
-                    setSearchParams({ product });
+                    setSearchParams({ product: product.name });
                   }}
                   className={`w-full text-left px-4 py-4 border-b border-border last:border-b-0 transition-colors ${
-                    selectedProduct === product
+                    selectedProduct.name === product.name
                       ? "bg-primary text-primary-foreground font-medium"
                       : "hover:bg-muted text-body-text"
                   }`}
                 >
-                  {product}
+                  {product.name}
                 </button>
               ))}
             </div>
@@ -87,8 +98,8 @@ const Products = ({ onBuyClick }: ProductsProps) => {
                 {/* Product Image */}
                 <div className="rounded-lg overflow-hidden">
                   <img
-                    src={productPowder}
-                    alt={selectedProduct}
+                    src={selectedProduct.image}
+                    alt={selectedProduct.name}
                     className="w-full h-full object-cover"
                   />
                 </div>
@@ -96,7 +107,7 @@ const Products = ({ onBuyClick }: ProductsProps) => {
                 {/* Product Info */}
                 <div>
                   <h2 className="text-3xl font-heading font-bold text-heading mb-4">
-                    {selectedProduct}
+                    {selectedProduct.name}
                   </h2>
                   <div className="mb-6">
                     <span className="text-3xl font-bold text-primary">{productDetails.price}</span>
@@ -171,16 +182,16 @@ const Products = ({ onBuyClick }: ProductsProps) => {
                     className="bg-card border border-border rounded-lg overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
                     onClick={() => {
                       setSelectedProduct(product);
-                      setSearchParams({ product });
+                      setSearchParams({ product: product.name });
                     }}
                   >
                     <img
-                      src={productPowder}
-                      alt={product}
+                      src={product.image}
+                      alt={product.name}
                       className="w-full aspect-square object-cover"
                     />
                     <div className="p-3">
-                      <p className="text-sm font-medium text-heading text-center">{product}</p>
+                      <p className="text-sm font-medium text-heading text-center">{product.name}</p>
                     </div>
                   </div>
                 ))}
