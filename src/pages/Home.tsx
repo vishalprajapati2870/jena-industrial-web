@@ -4,8 +4,20 @@ import { CheckCircle, Award, Shield, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 import heroImage from "@/assets/hero-chemical-powder.jpg";
 import qualityImage from "@/assets/quality-assurance.jpg";
-import productPowder from "@/assets/SILVER JUMBO CAKE.jpeg";
-import productGranules from "@/assets/SILVER SEMI CAKE.jpeg";
+
+// Import all product images
+import SILVER_JUMBO from "@/assets/SILVER JUMBO CAKE.jpeg";
+import SILVER_NEW from "@/assets/SILVER NEW CAKE.jpeg";
+import SILVER_SEMI from "@/assets/SILVER SEMI CAKE.jpeg";
+import SILVER_BLUE from "@/assets/SILVER BLUE CAKE.jpeg";
+import SILVER_ORANGE from "@/assets/SILVER ORANGE CAKE.jpeg";
+import SILVER_YELLOW from "@/assets/SILVER YELLOW CAKE.jpeg";
+import SILVER_HERBAL from "@/assets/SILVER HERBAL CAKE.jpeg";
+import SILVER_WONDER from "@/assets/SILVER WONDER CAKE.jpeg";
+import SILVER_ULTRA from "@/assets/SILVER ULTRA WHITE.jpeg";
+import CHETAK from "@/assets/CHETAK CAKE.jpeg";
+import DAYAWAN from "@/assets/DAYAWAN CAKE.jpeg";
+import TALATI from "@/assets/TALATI CAKE.jpeg";
 
 const Home = () => {
   const features = [
@@ -56,17 +68,40 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Our Products Grid */}
-      <section className="py-16 bg-background">
+      {/* Our Products - Marquee Scroll */}
+      <section className="py-16 bg-background overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-4xl font-heading font-bold text-heading text-center mb-12">
             Our Products
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <ProductCard image={productPowder} title="Sodium Chloride" />
-            <ProductCard image={productGranules} title="Calcium Carbonate" />
-            <ProductCard image={productPowder} title="Potassium Hydroxide" />
-            <ProductCard image={productGranules} title="Magnesium Sulfate" />
+        </div>
+        <div className="relative">
+          <div className="flex animate-marquee gap-8 hover:[animation-play-state:paused]">
+            {[
+              { image: SILVER_JUMBO, title: "Silver Jumbo Cake" },
+              { image: SILVER_NEW, title: "Silver New Cake" },
+              { image: SILVER_SEMI, title: "Silver Semi Cake" },
+              { image: SILVER_BLUE, title: "Silver Blue Cake" },
+              { image: SILVER_ORANGE, title: "Silver Orange Cake" },
+              { image: SILVER_YELLOW, title: "Silver Yellow Cake" },
+              { image: SILVER_HERBAL, title: "Silver Herbal Cake" },
+              { image: SILVER_WONDER, title: "Silver Wonder Cake" },
+              { image: SILVER_ULTRA, title: "Silver Ultra White" },
+              { image: CHETAK, title: "Chetak Cake" },
+              { image: DAYAWAN, title: "Dayawan Cake" },
+              { image: TALATI, title: "Talati Cake" },
+              // Duplicate for seamless loop
+              { image: SILVER_JUMBO, title: "Silver Jumbo Cake" },
+              { image: SILVER_NEW, title: "Silver New Cake" },
+              { image: SILVER_SEMI, title: "Silver Semi Cake" },
+              { image: SILVER_BLUE, title: "Silver Blue Cake" },
+              { image: SILVER_ORANGE, title: "Silver Orange Cake" },
+              { image: SILVER_YELLOW, title: "Silver Yellow Cake" },
+            ].map((product, idx) => (
+              <div key={idx} className="flex-shrink-0 w-64">
+                <ProductCard image={product.image} title={product.title} />
+              </div>
+            ))}
           </div>
         </div>
       </section>
