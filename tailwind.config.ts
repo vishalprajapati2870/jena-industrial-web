@@ -95,11 +95,11 @@ export default {
         slideDown: {
           "0%": {
             opacity: "0",
-            transform: "translateX(-50%) scaleY(0)",
+            transform: "translateX(-50%) translateY(-10px)",
           },
           "100%": {
             opacity: "1",
-            transform: "translateX(-50%) scaleY(1)",
+            transform: "translateX(-50%) translateY(0)",
           },
         },
       },
@@ -107,7 +107,7 @@ export default {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         marquee: "marquee 30s linear infinite",
-        slideDown: "slideDown 0.2s ease-out",
+        slideDown: "slideDown 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
       },
     },
   },
