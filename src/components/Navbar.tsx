@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Sparkles, Cookie } from "lucide-react";
 
 interface NavbarProps {
   onBuyClick: () => void;
@@ -24,10 +24,19 @@ export const Navbar = ({ onBuyClick }: NavbarProps) => {
     }, 150);
   };
 
-  const products = [
+  const detergentPowders = [
+    "Naval Silver Detergent Powder – 5 kg",
+    "Naval Silver Detergent Powder – 2 kg",
+    "Naval Silver Detergent Powder – 80 g Pouch",
+    "Naval Silver Detergent Powder – 150 g Pouch",
+    "Naval Silver Detergent Powder – 25 kg Bag",
+    "Naval Silver Detergent Powder – 20 kg Bag",
+  ];
+
+  const detergentCakes = [
     "Jambo Silver Detergent Cake",
     "New Silver Detergent Cake",
-    "Wonder Silver Detergent Cake ",
+    "Wonder Silver Detergent Cake",
     "Blue Silver Detergent Cake",
     "Jambo Ultra White Silver Detergent Cake",
     "Yellow Silver Detergent Cake",
@@ -73,7 +82,7 @@ export const Navbar = ({ onBuyClick }: NavbarProps) => {
             >
               <button
                 type="button"
-                className="text-navbar-text font-medium hover:text-primary transition-colors flex items-center gap-1"
+                className="text-primary font-medium hover:text-primary transition-colors flex items-center gap-1"
               >
                 Products
                 <ChevronDown
@@ -83,18 +92,52 @@ export const Navbar = ({ onBuyClick }: NavbarProps) => {
 
               {productsOpen && (
                 <div
-                  className="absolute top-full left-0 mt-2 w-64 bg-background border border-border rounded-lg shadow-lg overflow-hidden z-50 max-h-80 overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-200"
+                  className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-background border border-border rounded-lg shadow-xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200"
+                  style={{ width: "600px" }}
                 >
-                  {products.map((product, idx) => (
-                    <Link
-                      key={idx}
-                      to={`/products?product=${encodeURIComponent(product)}`}
-                      className="block px-4 py-3 text-sm text-body-text hover:bg-muted hover:text-primary transition-colors border-b border-border last:border-b-0"
-                      onClick={() => setProductsOpen(false)}
-                    >
-                      {product}
-                    </Link>
-                  ))}
+                  <div className="grid grid-cols-2">
+                    {/* Detergent Powder Column */}
+                    <div className="border-r border-border">
+                      <div className="flex items-center gap-2 px-4 py-3 border-b border-border">
+                        <Sparkles className="w-4 h-4 text-primary" />
+                        <span className="text-sm font-semibold text-primary uppercase tracking-wide">
+                          Detergent Powder
+                        </span>
+                      </div>
+                      <div className="py-2">
+                        {detergentPowders.map((product, idx) => (
+                          <div
+                            key={idx}
+                            className="block px-4 py-2.5 text-sm text-body-text hover:bg-muted cursor-default transition-colors"
+                          >
+                            {product}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Detergent Cake Column */}
+                    <div>
+                      <div className="flex items-center gap-2 px-4 py-3 border-b border-border">
+                        <Cookie className="w-4 h-4 text-primary" />
+                        <span className="text-sm font-semibold text-primary uppercase tracking-wide">
+                          Detergent Cake
+                        </span>
+                      </div>
+                      <div className="py-2 max-h-80 overflow-y-auto">
+                        {detergentCakes.map((product, idx) => (
+                          <Link
+                            key={idx}
+                            to={`/products?product=${encodeURIComponent(product)}`}
+                            className="block px-4 py-2.5 text-sm text-body-text hover:bg-muted hover:text-primary transition-colors"
+                            onClick={() => setProductsOpen(false)}
+                          >
+                            {product}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
