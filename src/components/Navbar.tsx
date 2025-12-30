@@ -92,13 +92,12 @@ export const Navbar = ({ onBuyClick }: NavbarProps) => {
 
               {productsOpen && (
                 <div
-                  className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-background border border-border rounded-lg shadow-xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200"
-                  style={{ width: "600px" }}
+                  className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-background border border-border rounded-lg shadow-xl z-50 animate-in fade-in slide-in-from-top-2 duration-200 min-w-[650px]"
                 >
-                  <div className="grid grid-cols-2">
+                  <div className="flex">
                     {/* Detergent Powder Column */}
-                    <div className="border-r border-border">
-                      <div className="flex items-center gap-2 px-4 py-3 border-b border-border">
+                    <div className="w-1/2 border-r border-border">
+                      <div className="flex items-center gap-2 px-4 py-3 border-b border-border bg-muted/30">
                         <Sparkles className="w-4 h-4 text-primary" />
                         <span className="text-sm font-semibold text-primary uppercase tracking-wide">
                           Detergent Powder
@@ -117,14 +116,14 @@ export const Navbar = ({ onBuyClick }: NavbarProps) => {
                     </div>
 
                     {/* Detergent Cake Column */}
-                    <div>
-                      <div className="flex items-center gap-2 px-4 py-3 border-b border-border">
+                    <div className="w-1/2">
+                      <div className="flex items-center gap-2 px-4 py-3 border-b border-border bg-muted/30">
                         <Cookie className="w-4 h-4 text-primary" />
                         <span className="text-sm font-semibold text-primary uppercase tracking-wide">
                           Detergent Cake
                         </span>
                       </div>
-                      <div className="py-2 max-h-80 overflow-y-auto">
+                      <div className="py-2">
                         {detergentCakes.map((product, idx) => (
                           <Link
                             key={idx}
