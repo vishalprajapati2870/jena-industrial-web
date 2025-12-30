@@ -92,7 +92,7 @@ export const Navbar = ({ onBuyClick }: NavbarProps) => {
 
               {productsOpen && (
                 <div
-                  className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-background border border-border rounded-lg shadow-xl z-50 animate-in fade-in slide-in-from-top-2 duration-200 min-w-[650px]"
+                  className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-background border border-border rounded-lg shadow-xl z-50 min-w-[650px] origin-top animate-[slideDown_0.2s_ease-out]"
                 >
                   <div className="flex">
                     {/* Detergent Powder Column */}
@@ -103,7 +103,7 @@ export const Navbar = ({ onBuyClick }: NavbarProps) => {
                           Detergent Powder
                         </span>
                       </div>
-                      <div className="py-2">
+                      <div className="py-2 max-h-[280px] overflow-y-auto">
                         {detergentPowders.map((product, idx) => (
                           <div
                             key={idx}
@@ -123,7 +123,7 @@ export const Navbar = ({ onBuyClick }: NavbarProps) => {
                           Detergent Cake
                         </span>
                       </div>
-                      <div className="py-2">
+                      <div className="py-2 max-h-[280px] overflow-y-auto">
                         {detergentCakes.map((product, idx) => (
                           <Link
                             key={idx}
