@@ -92,7 +92,7 @@ export const Navbar = ({ onBuyClick }: NavbarProps) => {
 
               {productsOpen && (
                 <div
-                  className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-background border border-border rounded-lg shadow-xl z-50 min-w-[650px] origin-top animate-slideDown"
+                  className="absolute top-full left-1/2 mt-2 bg-background border border-border rounded-lg shadow-xl z-50 min-w-[650px] origin-top animate-slideDown"
                 >
                   <div className="flex">
                     {/* Detergent Powder Column */}
