@@ -45,12 +45,12 @@ const Products = ({ onBuyClick }: ProductsProps) => {
     { name: "Chetak Silver Detergent Cake", image: CHETAK },
     { name: "Talati Silver Detergent Cake", image: TALATI },
     { name: "Semi Silver Detergent Cake", image: SILVER_SEMI },
-    { name: "silver 5kg bag", image: SILVER_5KG},
-    { name: "silver 2kg bag", image: SILVER_2KG},
-    { name: "silver 1kg bag", image: SILVER_1KG},
-    { name: "silver 500gm bag", image: SILVER_500GM},
-    { name: "silver 150gm bag", image: SILVER_150GM},
-    { name: "silver 80gm bag", image: SILVER_80GM},
+    { name: "Naval Silver Detergent Powder – 5 kg Bag", image: SILVER_5KG},
+    { name: "Naval Silver Detergent Powder – 2 kg Bag", image: SILVER_2KG},
+    { name: "Naval Silver Detergent Powder – 1 kg Bag", image: SILVER_1KG},
+    { name: "Naval Silver Detergent Powder – 500 gms Bag", image: SILVER_500GM},
+    { name: "Naval Silver Detergent Powder – 150 gms Bag", image: SILVER_150GM},
+    { name: "Naval Silver Detergent Powder – 80 gms Bag", image: SILVER_80GM},
   ];
 
   const productFromUrl = searchParams.get("product");
