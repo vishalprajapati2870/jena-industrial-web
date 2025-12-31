@@ -19,6 +19,13 @@ import CHETAK from "@/assets/CHETAK CAKE.jpeg";
 import DAYAWAN from "@/assets/DAYAWAN CAKE.jpeg";
 import TALATI from "@/assets/TALATI CAKE.jpeg";
 
+import SILVER_5KG from "@/assets/SILVER 5KG.jpeg";
+import SILVER_2KG from "@/assets/SILVER 2KG.jpeg";
+import SILVER_1KG from "@/assets/SIVER 1KG.jpeg";
+import SILVER_500GM from "@/assets/SILVER 500GM.jpeg";
+import SILVER_150GM from "@/assets/SILVER 150GM.jpeg";
+import SILVER_80GM from "@/assets/SILVER 80GM.jpeg";
+
 const Home = () => {
   const features = [
     {
@@ -106,6 +113,35 @@ const Home = () => {
         </div>
       </section>
 
+      <section className="py-16 bg-background overflow-hidden">
+        
+        <div className="relative">
+          <div className="flex animate-marquee gap-8 hover:[animation-play-state:paused]">
+            {[
+               { image: SILVER_5KG, title: "SILVER DETERGENT POWDER 5KG", name: "SILVER DETERGENT POWDER 5KG" },
+               { image: SILVER_2KG, title: "SILVER DETERGENT POWDER 2KG", name: "SILVER DETERGENT POWDER 2KG" },
+               { image: SILVER_1KG, title: "SILVER DETERGENT POWDER 1KG", name: "SILVER DETERGENT POWDER 1KG" },
+               { image: SILVER_500GM, title: "SILVER DETERGENT POWDER 500GM", name: "SILVER DETERGENT POWDER 500GM" },
+               { image: SILVER_150GM, title: "SILVER DETERGENT POWDER 150GM", name: "SILVER DETERGENT POWDER 150GM" },
+               { image: SILVER_80GM, title: "SILVER DETERGENT POWDER 80GM", name: "SILVER DETERGENT POWDER 80GM" },
+          
+              // Duplicate for seamless loop
+              { image: SILVER_5KG, title: "SILVER DETERGENT POWDER 5KG", name: "SILVER DETERGENT POWDER 5KG" },
+              { image: SILVER_2KG, title: "SILVER DETERGENT POWDER 2KG", name: "SILVER DETERGENT POWDER 2KG" },
+              { image: SILVER_1KG, title: "SILVER DETERGENT POWDER 1KG", name: "SILVER DETERGENT POWDER 1KG" },
+              { image: SILVER_500GM, title: "SILVER DETERGENT POWDER 500GM", name: "SILVER DETERGENT POWDER 500GM" },
+              { image: SILVER_150GM, title: "SILVER DETERGENT POWDER 150GM", name: "SILVER DETERGENT POWDER 150GM" },
+              { image: SILVER_80GM, title: "SILVER DETERGENT POWDER 80GM", name: "SILVER DETERGENT POWDER 80GM" },
+            ].map((product, idx) => (
+              <div key={idx} className="flex-shrink-0 w-64">
+                <ProductCard image={product.image} title={product.title} productName={product.name} />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+
       {/* Quality Assurance */}
       <section className="py-16 bg-muted">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -123,8 +159,8 @@ const Home = () => {
               </p>
               <p className="text-body-text text-lg leading-relaxed">
                 We are committed to maintaining ISO certifications and adhering to
-                international chemical safety regulations, providing our clients
-                with reliable, safe, and effective industrial chemical solutions.
+                international detergent safety regulations, providing our clients
+                with reliable, safe, and effective industrial detergent cake and powder.
               </p>
             </div>
             <div className="rounded-lg overflow-hidden shadow-lg">
@@ -169,11 +205,11 @@ const Home = () => {
           </h2>
           <p className="text-lg leading-relaxed max-w-4xl mx-auto opacity-90">
             We are dedicated to sustainable manufacturing practices and
-            environmental stewardship. Jena Marketing believes in responsible
-            chemical production that minimizes environmental impact while
+            environmental stewardship. naval soap factory believes in responsible
+            detergent production that minimizes environmental impact while
             delivering exceptional quality. Our commitment extends beyond products
             to include ethical sourcing, waste reduction, and community engagement.
-            Together, we're building a cleaner, safer future for the chemical
+            Together, we're building a cleaner, safer future for the detergent
             industry.
           </p>
         </div>

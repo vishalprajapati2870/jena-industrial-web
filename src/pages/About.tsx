@@ -6,9 +6,9 @@ const About = () => {
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-primary to-accent text-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-5xl font-heading font-bold mb-6">About Jena Marketing</h1>
+          <h1 className="text-5xl font-heading font-bold mb-6">About Naval Soap Factory</h1>
           <p className="text-xl max-w-3xl mx-auto opacity-95">
-            Leading the chemical industry with innovation, quality, and sustainability
+            Leading the detergent industry with innovation, quality, and sustainability
           </p>
         </div>
       </section>
@@ -21,9 +21,9 @@ const About = () => {
               Our Story
             </h2>
             <p className="text-lg text-body-text leading-relaxed mb-6">
-              Founded with a vision to revolutionize the industrial chemical sector, Jena Marketing
-              has grown into a trusted name in chemical manufacturing and distribution. Our journey
-              began with a commitment to providing high-quality chemical products that meet the
+              Founded with a vision to revolutionize the industrial detergent sector, naval soap factory
+              has grown into a trusted name in detergent manufacturing and distribution. Our journey
+              began with a commitment to providing high-quality detergent products that meet the
               evolving needs of diverse industries.
             </p>
             <p className="text-lg text-body-text leading-relaxed mb-6">
@@ -33,7 +33,7 @@ const About = () => {
               ensure that every product meets international standards.
             </p>
             <p className="text-lg text-body-text leading-relaxed">
-              Today, Jena Marketing stands as a beacon of excellence in the chemical industry,
+              Today, naval soap factory stands as a beacon of excellence in the detergent industry,
               combining traditional values with modern innovation to deliver solutions that drive
               success for our clients.
             </p>
@@ -49,7 +49,7 @@ const About = () => {
               <Target className="w-16 h-16 text-primary mx-auto mb-4" />
               <h3 className="text-2xl font-heading font-bold text-heading mb-4">Our Mission</h3>
               <p className="text-body-text leading-relaxed">
-                To provide superior chemical products and services that empower industries,
+                To provide superior detergent products and services that empower industries,
                 ensuring safety, sustainability, and innovation in everything we do.
               </p>
             </div>
@@ -58,7 +58,7 @@ const About = () => {
               <Eye className="w-16 h-16 text-primary mx-auto mb-4" />
               <h3 className="text-2xl font-heading font-bold text-heading mb-4">Our Vision</h3>
               <p className="text-body-text leading-relaxed">
-                To be the global leader in industrial chemicals, recognized for excellence,
+                To be the global leader in industrial detergent cake and powder, recognized for excellence,
                 integrity, and sustainable practices that shape the future of the industry.
               </p>
             </div>

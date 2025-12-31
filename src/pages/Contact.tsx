@@ -44,9 +44,9 @@ const Contact = () => {
                 <div>
                   <h3 className="font-heading font-semibold text-heading mb-1">Address</h3>
                   <p className="text-body-text">
-                    123 Industrial Avenue<br />
-                    Chemical District, State 12345<br />
-                    United States
+                  6/D/1, Anand Industrial Estate, Borsad Road,<br />
+                  ANAND - 388 001. (Guj.)<br />
+                    INDIA
                   </p>
                 </div>
               </div>
@@ -57,12 +57,8 @@ const Contact = () => {
                 </div>
                 <div>
                   <h3 className="font-heading font-semibold text-heading mb-1">Email</h3>
-                  <a href="mailto:info@jenamarketing.com" className="text-body-text hover:text-primary">
-                    info@jenamarketing.com
-                  </a>
-                  <br />
-                  <a href="mailto:sales@jenamarketing.com" className="text-body-text hover:text-primary">
-                    sales@jenamarketing.com
+                  <a href="mailto:navalsoap@yahoo.com" className="text-body-text hover:text-primary">
+                  navalsoap@yahoo.com
                   </a>
                 </div>
               </div>
@@ -73,12 +69,12 @@ const Contact = () => {
                 </div>
                 <div>
                   <h3 className="font-heading font-semibold text-heading mb-1">Phone</h3>
-                  <a href="tel:+1234567890" className="text-body-text hover:text-primary">
-                    +1 (234) 567-890
+                  <a href="tel:+919825821075" className="text-body-text hover:text-primary">
+                    +91 98258 21075
                   </a>
                   <br />
-                  <a href="tel:+1234567891" className="text-body-text hover:text-primary">
-                    +1 (234) 567-891
+                  <a href="tel:+9825805478" className="text-body-text hover:text-primary">
+                    +91 98258 05478
                   </a>
                 </div>
               </div>
