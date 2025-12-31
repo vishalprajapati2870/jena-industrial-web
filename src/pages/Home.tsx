@@ -113,34 +113,6 @@ const Home = () => {
         </div>
       </section>
 
-      <section className="py-16 bg-background overflow-hidden">
-        
-        <div className="relative">
-          <div className="flex animate-marquee gap-8 hover:[animation-play-state:paused]">
-            {[
-               { image: SILVER_5KG, title: "SILVER DETERGENT POWDER 5KG", name: "SILVER DETERGENT POWDER 5KG" },
-               { image: SILVER_2KG, title: "SILVER DETERGENT POWDER 2KG", name: "SILVER DETERGENT POWDER 2KG" },
-               { image: SILVER_1KG, title: "SILVER DETERGENT POWDER 1KG", name: "SILVER DETERGENT POWDER 1KG" },
-               { image: SILVER_500GM, title: "SILVER DETERGENT POWDER 500GM", name: "SILVER DETERGENT POWDER 500GM" },
-               { image: SILVER_150GM, title: "SILVER DETERGENT POWDER 150GM", name: "SILVER DETERGENT POWDER 150GM" },
-               { image: SILVER_80GM, title: "SILVER DETERGENT POWDER 80GM", name: "SILVER DETERGENT POWDER 80GM" },
-          
-              // Duplicate for seamless loop
-              { image: SILVER_5KG, title: "SILVER DETERGENT POWDER 5KG", name: "SILVER DETERGENT POWDER 5KG" },
-              { image: SILVER_2KG, title: "SILVER DETERGENT POWDER 2KG", name: "SILVER DETERGENT POWDER 2KG" },
-              { image: SILVER_1KG, title: "SILVER DETERGENT POWDER 1KG", name: "SILVER DETERGENT POWDER 1KG" },
-              { image: SILVER_500GM, title: "SILVER DETERGENT POWDER 500GM", name: "SILVER DETERGENT POWDER 500GM" },
-              { image: SILVER_150GM, title: "SILVER DETERGENT POWDER 150GM", name: "SILVER DETERGENT POWDER 150GM" },
-              { image: SILVER_80GM, title: "SILVER DETERGENT POWDER 80GM", name: "SILVER DETERGENT POWDER 80GM" },
-            ].map((product, idx) => (
-              <div key={idx} className="flex-shrink-0 w-64">
-                <ProductCard image={product.image} title={product.title} productName={product.name} />
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
 
       {/* Quality Assurance */}
       <section className="py-16 bg-muted">
