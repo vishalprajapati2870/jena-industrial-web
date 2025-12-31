@@ -17,7 +17,7 @@ import TALATI from "@/assets/TALATI CAKE.jpeg";
 import SILVER_SEMI from "@/assets/SILVER SEMI CAKE.jpeg";
 import SILVER_5KG from "@/assets/SILVER 5KG.jpeg";
 import SILVER_2KG from "@/assets/SILVER 2KG.jpeg";
-import SILVER_1KG from "@/assets/SILVER 1KG.jpeg";
+import SILVER_1KG from "@/assets/SIVER 1KG.jpeg";
 import SILVER_500GM from "@/assets/SILVER 500GM.jpeg";
 import SILVER_150GM from "@/assets/SILVER 150GM.jpeg";
 import SILVER_80GM from "@/assets/SILVER 80GM.jpeg";
