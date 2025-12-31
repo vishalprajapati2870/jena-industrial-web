@@ -59,8 +59,11 @@ export const Footer = () => {
               </div>
               <div className="flex items-center gap-2">
                 <Phone className="w-4 h-4 flex-shrink-0" />
+                <a href="tel:+91 9825821075" className="text-sm hover:text-primary">
+                  +91 98258 21075
+                </a>
                 <a href="tel:+91 9825805478" className="text-sm hover:text-primary">
-                  +91 98258 05478
+                  +91 98258 05478 
                 </a>
               </div>
             </div>
