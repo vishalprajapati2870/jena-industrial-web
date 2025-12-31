@@ -92,16 +92,16 @@ export default {
             transform: "translateX(-50%)",
           },
         },
-        slideDown: {
-          "0%": {
-            opacity: "0",
-            transform: "translateY(-10px)",
-          },
-          "100%": {
-            opacity: "1",
-            transform: "translateY(0)",
-          },
+      slideDown: {
+        "0%": {
+          opacity: "0",
+          transform: "translateX(-50%) translateY(-10px)",
         },
+        "100%": {
+          opacity: "1",
+          transform: "translateX(-50%) translateY(0)",
+        },
+      },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
