@@ -25,12 +25,12 @@ export const Navbar = ({ onBuyClick }: NavbarProps) => {
   };
 
   const detergentPowders = [
-    "Naval Silver Detergent Powder – 5 kg",
-    "Naval Silver Detergent Powder – 2 kg",
-    "Naval Silver Detergent Powder – 80 g Pouch",
-    "Naval Silver Detergent Powder – 150 g Pouch",
-    "Naval Silver Detergent Powder – 25 kg Bag",
-    "Naval Silver Detergent Powder – 20 kg Bag",
+    "Naval Silver Detergent Powder – 5 kg Bag",
+    "Naval Silver Detergent Powder – 2 kg Bag",
+    "Naval Silver Detergent Powder – 1 kg Bag",
+    "Naval Silver Detergent Powder – 500 gms Bag",
+    "Naval Silver Detergent Powder – 150 gms Bag",
+    "Naval Silver Detergent Powder – 80 gms Bag",
   ];
 
   const detergentCakes = [
@@ -105,12 +105,14 @@ export const Navbar = ({ onBuyClick }: NavbarProps) => {
                       </div>
                       <div className="py-2 max-h-[280px] overflow-y-auto">
                         {detergentPowders.map((product, idx) => (
-                          <div
+                            <Link
                             key={idx}
-                            className="block px-4 py-2.5 text-sm text-body-text hover:bg-muted cursor-default transition-colors"
+                            to={`/products?product=${encodeURIComponent(product)}`}
+                            className="block px-4 py-2.5 text-sm text-body-text hover:bg-muted hover:text-primary transition-colors"
+                            onClick={() => setProductsOpen(false)}
                           >
                             {product}
-                          </div>
+                          </Link>
                         ))}
                       </div>
                     </div>

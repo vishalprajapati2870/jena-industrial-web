@@ -15,6 +15,13 @@ import DAYAWAN from "@/assets/DAYAWAN CAKE.jpeg";
 import CHETAK from "@/assets/CHETAK CAKE.jpeg";
 import TALATI from "@/assets/TALATI CAKE.jpeg";
 import SILVER_SEMI from "@/assets/SILVER SEMI CAKE.jpeg";
+import SILVER_5KG from "@/assets/SILVER 5KG.jpeg";
+import SILVER_2KG from "@/assets/SILVER 2KG.jpeg";
+import SILVER_1KG from "@/assets/SILVER 1KG.jpeg";
+import SILVER_500GM from "@/assets/SILVER 500GM.jpeg";
+import SILVER_150GM from "@/assets/SILVER 150GM.jpeg";
+import SILVER_80GM from "@/assets/SILVER 80GM.jpeg";
+
  
 
 
@@ -38,6 +45,12 @@ const Products = ({ onBuyClick }: ProductsProps) => {
     { name: "Chetak Silver Detergent Cake", image: CHETAK },
     { name: "Talati Silver Detergent Cake", image: TALATI },
     { name: "Semi Silver Detergent Cake", image: SILVER_SEMI },
+    { name: "silver 5kg bag", image: SILVER_5KG},
+    { name: "silver 2kg bag", image: SILVER_2KG},
+    { name: "silver 1kg bag", image: SILVER_1KG},
+    { name: "silver 500gm bag", image: SILVER_500GM},
+    { name: "silver 150gm bag", image: SILVER_150GM},
+    { name: "silver 80gm bag", image: SILVER_80GM},
   ];
 
   const productFromUrl = searchParams.get("product");
