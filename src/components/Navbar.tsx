@@ -82,7 +82,7 @@ export const Navbar = ({ onBuyClick }: NavbarProps) => {
             >
               <button
                 type="button"
-                className="text-primary font-medium hover:text-primary transition-colors flex items-center gap-1"
+                className="text-navbar-text font-medium hover:text-primary transition-colors flex items-center gap-1"
               >
                 Products
                 <ChevronDown
