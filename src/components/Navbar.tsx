@@ -92,8 +92,11 @@ export const Navbar = ({ onBuyClick }: NavbarProps) => {
 
               {productsOpen && (
                 <div
-                  className="absolute top-full left-0 mt-2 bg-background border border-border rounded-lg shadow-xl z-50 w-[650px] origin-top animate-slideDown"
-                  style={{ transform: 'none' }}
+                  className="absolute left-1/2 -translate-x-1/2 top-full mt-2 bg-background border border-border rounded-lg shadow-xl z-50 w-[650px]"
+                  style={{ 
+                    position: 'absolute',
+                    transform: 'translateX(-50%)',
+                  }}
                 >
                   <div className="flex">
                     {/* Detergent Powder Column */}
@@ -106,7 +109,7 @@ export const Navbar = ({ onBuyClick }: NavbarProps) => {
                       </div>
                       <div className="py-2 max-h-[280px] overflow-y-auto">
                         {detergentPowders.map((product, idx) => (
-                            <Link
+                          <Link
                             key={idx}
                             to={`/products?product=${encodeURIComponent(product)}`}
                             className="block px-4 py-2.5 text-sm text-body-text hover:bg-muted hover:text-primary transition-colors"
