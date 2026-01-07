@@ -34,16 +34,32 @@ const Home = () => {
   const [scrollLeft, setScrollLeft] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const requestRef = useRef<number>();
+  const directionRef = useRef<number>(1); // 1 for left (default), -1 for right
+  const progressRef = useRef<number>(0);
+  const speed = 0.5; // Slower speed
 
   useEffect(() => {
     const scroll = () => {
       if (marqueeRef.current && !isPaused && !isDragging) {
-        marqueeRef.current.scrollLeft += 1;
+        // Accumulate fractional movement
+        progressRef.current += speed * directionRef.current;
         
-        // Infinite loop logic: If we've scrolled past the first set (halfway), reset
-        // This assumes the list is doubled.
+        // Only apply if we have at least 1px of movement to apply? 
+        // Actually, let's just apply it and let the browser handle sub-pixels if it can, 
+        // or just rely on the integer part updates.
+        // Better: Keep 'virtual' position in progressRef synced with scrollLeft initially.
+        // Actually, simplest is:
+        
+        const currentScroll = marqueeRef.current.scrollLeft;
+        const newScroll = currentScroll + (speed * directionRef.current);
+        
+        marqueeRef.current.scrollLeft = newScroll;
+
+        // Loop Logic
         if (marqueeRef.current.scrollLeft >= marqueeRef.current.scrollWidth / 2) {
-          marqueeRef.current.scrollLeft = 0;
+             marqueeRef.current.scrollLeft = 0;
+        } else if (marqueeRef.current.scrollLeft <= 0) {
+             marqueeRef.current.scrollLeft = marqueeRef.current.scrollWidth / 2;
         }
       }
       requestRef.current = requestAnimationFrame(scroll);
@@ -67,15 +83,24 @@ const Home = () => {
     if (!isDragging || !marqueeRef.current) return;
     e.preventDefault();
     const x = e.pageX - marqueeRef.current.offsetLeft;
-    const walk = (x - startX) * 2; // Scroll-fast
+    const walk = (x - startX) * 2;
     let newScrollLeft = scrollLeft - walk;
+
+    // Determine direction based on drag
+    // If dragging LEFT (walk < 0 so newScrollLeft > old), we are pulling content left, so valid direction is 1.
+    // If dragging RIGHT (walk > 0 so newScrollLeft < old), we are pulling content right, so valid direction is -1.
+    if (walk > 0) {
+        directionRef.current = -1;
+    } else if (walk < 0) {
+        directionRef.current = 1;
+    }
 
     // Manual Drag Loop Logic
     const maxScroll = marqueeRef.current.scrollWidth / 2;
     if (newScrollLeft < 0) {
-      newScrollLeft = maxScroll + newScrollLeft; // wrap to end
+      newScrollLeft = maxScroll + newScrollLeft;
     } else if (newScrollLeft >= maxScroll) {
-      newScrollLeft = newScrollLeft - maxScroll; // wrap to start
+      newScrollLeft = newScrollLeft - maxScroll;
     }
 
     marqueeRef.current.scrollLeft = newScrollLeft;
@@ -83,6 +108,10 @@ const Home = () => {
 
   const handleMouseUp = useCallback(() => {
     setIsDragging(false);
+    // Determine continue direction? 
+    // It's already set in MouseMove.
+    
+    // Optional: Add some momentum or strictly just resume? User said "continues move".
     setIsPaused(false);
   }, []);
 
@@ -99,6 +128,12 @@ const Home = () => {
     const x = e.touches[0].pageX - marqueeRef.current.offsetLeft;
     const walk = (x - startX) * 2;
     let newScrollLeft = scrollLeft - walk;
+
+    if (walk > 0) {
+        directionRef.current = -1;
+    } else if (walk < 0) {
+        directionRef.current = 1;
+    }
 
      // Manual Drag Loop Logic
      const maxScroll = marqueeRef.current.scrollWidth / 2;
@@ -181,7 +216,16 @@ const Home = () => {
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
-          onMouseEnter={() => setIsPaused(true)}
+          // Removing onMouseEnter since we want it to keep moving unless actively dragged?
+          // User said "one time stop after finish all product i want to here infinite loop"
+          // User also said "double click and move" - usually means Drag.
+          // Let's keep hover-pause for usability, or remove it if they want continuous flow.
+          // User said "stop after finish" was the OLD behavior they didn't want.
+          // "slight slow marqee and after the seoble click than move" -> maybe they want it to pause on click, then move on double click?
+          // "When user move double click and move that direction in continues move" -> Dragging dictates direction.
+          // I will keep hover pause OFF for now to emphasize the "continuous move" unless they explicitly asked for pause.
+          // Actually, standard marquee behavior usually pauses on hover. I'll COMMENT IT OUT for now to be "continuous".
+          // onMouseEnter={() => setIsPaused(true)} 
         >
           <div className="flex gap-8">
             {[
