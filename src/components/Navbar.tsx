@@ -66,13 +66,13 @@ export const Navbar = ({ onBuyClick, user, onLogout }: NavbarProps) => {
           <div className="hidden md:flex items-center space-x-8">
             <Link
               to="/"
-              className="text-navbar-text text-sm font-bold uppercase tracking-wider hover:text-primary transition-colors"
+              className="text-navbar-text font-medium hover:text-primary transition-colors"
             >
               Home
             </Link>
             <Link
               to="/about"
-              className="text-navbar-text text-sm font-bold uppercase tracking-wider hover:text-primary transition-colors"
+              className="text-navbar-text font-medium hover:text-primary transition-colors"
             >
               About Us
             </Link>
@@ -152,7 +152,7 @@ export const Navbar = ({ onBuyClick, user, onLogout }: NavbarProps) => {
 
             <Link
               to="/contact"
-              className="text-navbar-text text-sm font-bold uppercase tracking-wider hover:text-primary transition-colors"
+              className="text-navbar-text font-medium hover:text-primary transition-colors"
             >
               Contact Us
             </Link>
@@ -162,16 +162,16 @@ export const Navbar = ({ onBuyClick, user, onLogout }: NavbarProps) => {
           <div className="flex items-center gap-4">
               {user ? (
                   <div className="flex items-center">
-                      <span className="text-sm font-bold text-gray-700 flex items-center gap-2 uppercase tracking-wide">
+                      <span className="text-navbar-text font-medium flex items-center gap-2">
                         <User className="w-4 h-4" />
                         {user.username}
                       </span>
                       
-                      <div className="h-6 w-[1px] bg-gray-300 mx-4"></div>
+                      <div className="h-6 w-[1px] bg-border mx-4"></div>
 
                       <button
                         onClick={onLogout}
-                        className="text-red-500 hover:text-red-600 text-sm font-bold uppercase tracking-wide flex items-center gap-2 transition-colors"
+                        className="text-destructive hover:text-destructive/80 font-medium flex items-center gap-2 transition-colors"
                       >
                         <LogOut className="w-4 h-4" />
                         Logout
