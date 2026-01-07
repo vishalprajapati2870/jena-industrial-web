@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/ProductCard";
 import { CheckCircle, Award, Shield, Users } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useRef, useState } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
 import heroImage from "@/assets/hero-chemical-powder.jpg";
 import qualityImage from "@/assets/quality-assurance.jpg";
 
@@ -30,27 +30,59 @@ import SILVER_80GM from "@/assets/SILVER 80GM.jpeg";
 const Home = () => {
   const marqueeRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
 
-  const handleMouseDown = (e: React.MouseEvent) => {
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
     if (!marqueeRef.current) return;
     setIsDragging(true);
+    setIsPaused(true);
     setStartX(e.pageX - marqueeRef.current.offsetLeft);
     setScrollLeft(marqueeRef.current.scrollLeft);
-  };
+  }, []);
 
-  const handleMouseMove = (e: React.MouseEvent) => {
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (!isDragging || !marqueeRef.current) return;
     e.preventDefault();
     const x = e.pageX - marqueeRef.current.offsetLeft;
     const walk = (x - startX) * 2;
     marqueeRef.current.scrollLeft = scrollLeft - walk;
-  };
+  }, [isDragging, startX, scrollLeft]);
 
-  const handleMouseUp = () => {
+  const handleMouseUp = useCallback(() => {
     setIsDragging(false);
-  };
+  }, []);
+
+  // Touch support for mobile
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    if (!marqueeRef.current) return;
+    setIsDragging(true);
+    setIsPaused(true);
+    setStartX(e.touches[0].pageX - marqueeRef.current.offsetLeft);
+    setScrollLeft(marqueeRef.current.scrollLeft);
+  }, []);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (!isDragging || !marqueeRef.current) return;
+    const x = e.touches[0].pageX - marqueeRef.current.offsetLeft;
+    const walk = (x - startX) * 2;
+    marqueeRef.current.scrollLeft = scrollLeft - walk;
+  }, [isDragging, startX, scrollLeft]);
+
+  const handleTouchEnd = useCallback(() => {
+    setIsDragging(false);
+  }, []);
+
+  // Resume auto-scroll after user stops interacting
+  useEffect(() => {
+    if (!isDragging && isPaused) {
+      const timer = setTimeout(() => {
+        setIsPaused(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [isDragging, isPaused]);
 
   const features = [
     {
@@ -109,13 +141,16 @@ const Home = () => {
         </div>
         <div 
           ref={marqueeRef}
-          className={`relative overflow-x-auto scrollbar-hide cursor-grab ${isDragging ? 'cursor-grabbing' : ''}`}
+          className={`relative overflow-x-auto scrollbar-hide transition-all duration-200 ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
         >
-          <div className={`flex gap-8 ${isDragging ? '' : 'animate-marquee hover:[animation-play-state:paused]'}`}>
+          <div className={`flex gap-8 ${isPaused ? '' : 'animate-marquee'}`}>
             {[
               { image: SILVER_JUMBO, title: "Jambo Silver Detergent Cake", name: "Jambo Silver Detergent Cake" },
               { image: SILVER_NEW, title: "New Silver Detergent Cake", name: "New Silver Detergent Cake" },
