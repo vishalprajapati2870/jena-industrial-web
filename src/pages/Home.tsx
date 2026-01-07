@@ -30,9 +30,30 @@ import SILVER_80GM from "@/assets/SILVER 80GM.jpeg";
 const Home = () => {
   const marqueeRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const requestRef = useRef<number>();
+
+  useEffect(() => {
+    const scroll = () => {
+      if (marqueeRef.current && !isPaused && !isDragging) {
+        marqueeRef.current.scrollLeft += 1;
+        
+        // Infinite loop logic: If we've scrolled past the first set (halfway), reset
+        // This assumes the list is doubled.
+        if (marqueeRef.current.scrollLeft >= marqueeRef.current.scrollWidth / 2) {
+          marqueeRef.current.scrollLeft = 0;
+        }
+      }
+      requestRef.current = requestAnimationFrame(scroll);
+    };
+    
+    requestRef.current = requestAnimationFrame(scroll);
+    return () => {
+      if (requestRef.current) cancelAnimationFrame(requestRef.current);
+    };
+  }, [isPaused, isDragging]);
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     if (!marqueeRef.current) return;
@@ -46,15 +67,25 @@ const Home = () => {
     if (!isDragging || !marqueeRef.current) return;
     e.preventDefault();
     const x = e.pageX - marqueeRef.current.offsetLeft;
-    const walk = (x - startX) * 2;
-    marqueeRef.current.scrollLeft = scrollLeft - walk;
+    const walk = (x - startX) * 2; // Scroll-fast
+    let newScrollLeft = scrollLeft - walk;
+
+    // Manual Drag Loop Logic
+    const maxScroll = marqueeRef.current.scrollWidth / 2;
+    if (newScrollLeft < 0) {
+      newScrollLeft = maxScroll + newScrollLeft; // wrap to end
+    } else if (newScrollLeft >= maxScroll) {
+      newScrollLeft = newScrollLeft - maxScroll; // wrap to start
+    }
+
+    marqueeRef.current.scrollLeft = newScrollLeft;
   }, [isDragging, startX, scrollLeft]);
 
   const handleMouseUp = useCallback(() => {
     setIsDragging(false);
+    setIsPaused(false);
   }, []);
 
-  // Touch support for mobile
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
     if (!marqueeRef.current) return;
     setIsDragging(true);
@@ -67,22 +98,23 @@ const Home = () => {
     if (!isDragging || !marqueeRef.current) return;
     const x = e.touches[0].pageX - marqueeRef.current.offsetLeft;
     const walk = (x - startX) * 2;
-    marqueeRef.current.scrollLeft = scrollLeft - walk;
+    let newScrollLeft = scrollLeft - walk;
+
+     // Manual Drag Loop Logic
+     const maxScroll = marqueeRef.current.scrollWidth / 2;
+     if (newScrollLeft < 0) {
+       newScrollLeft = maxScroll + newScrollLeft;
+     } else if (newScrollLeft >= maxScroll) {
+       newScrollLeft = newScrollLeft - maxScroll;
+     }
+
+    marqueeRef.current.scrollLeft = newScrollLeft;
   }, [isDragging, startX, scrollLeft]);
 
   const handleTouchEnd = useCallback(() => {
     setIsDragging(false);
+    setIsPaused(false);
   }, []);
-
-  // Resume auto-scroll after user stops interacting
-  useEffect(() => {
-    if (!isDragging && isPaused) {
-      const timer = setTimeout(() => {
-        setIsPaused(false);
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [isDragging, isPaused]);
 
   const features = [
     {
@@ -141,7 +173,7 @@ const Home = () => {
         </div>
         <div 
           ref={marqueeRef}
-          className={`relative overflow-x-auto scrollbar-hide transition-all duration-200 ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+          className={`relative overflow-x-hidden whitespace-nowrap scrollbar-hide select-none ${isDragging ? 'cursor-grabbing [&_a]:pointer-events-none' : 'cursor-grab'}`}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
@@ -149,8 +181,9 @@ const Home = () => {
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
+          onMouseEnter={() => setIsPaused(true)}
         >
-          <div className={`flex gap-8 ${isPaused ? '' : 'animate-marquee'}`}>
+          <div className="flex gap-8">
             {[
               { image: SILVER_JUMBO, title: "Jambo Silver Detergent Cake", name: "Jambo Silver Detergent Cake" },
               { image: SILVER_NEW, title: "New Silver Detergent Cake", name: "New Silver Detergent Cake" },
@@ -164,13 +197,19 @@ const Home = () => {
               { image: CHETAK, title: "Chetak Silver Detergent Cake", name: "Chetak Silver Detergent Cake" },
               { image: DAYAWAN, title: "Dayawan Silver Detergent Cake", name: "Dayawan Silver Detergent Cake" },
               { image: TALATI, title: "Talati Silver Detergent Cake", name: "Talati Silver Detergent Cake" },
-              // Duplicate for seamless loop
+              // Duplicate for seamless loop - Full list duplicated
               { image: SILVER_JUMBO, title: "Jambo Silver Detergent Cake", name: "Jambo Silver Detergent Cake" },
               { image: SILVER_NEW, title: "New Silver Detergent Cake", name: "New Silver Detergent Cake" },
               { image: SILVER_SEMI, title: "Semi Silver Detergent Cake", name: "Semi Silver Detergent Cake" },
               { image: SILVER_BLUE, title: "Blue Silver Detergent Cake", name: "Blue Silver Detergent Cake" },
               { image: SILVER_ORANGE, title: "Orange Silver Detergent Cake", name: "Orange Silver Detergent Cake" },
               { image: SILVER_YELLOW, title: "Yellow Silver Detergent Cake", name: "Yellow Silver Detergent Cake" },
+              { image: SILVER_HERBAL, title: "Herbal Silver Detergent Cake", name: "Herbal Silver Detergent Cake" },
+              { image: SILVER_WONDER, title: "Wonder Silver Detergent Cake", name: "Wonder Silver Detergent Cake" },
+              { image: SILVER_ULTRA, title: "Jambo Ultra White Silver Detergent Cake", name: "Jambo Ultra White Silver Detergent Cake" },
+              { image: CHETAK, title: "Chetak Silver Detergent Cake", name: "Chetak Silver Detergent Cake" },
+              { image: DAYAWAN, title: "Dayawan Silver Detergent Cake", name: "Dayawan Silver Detergent Cake" },
+              { image: TALATI, title: "Talati Silver Detergent Cake", name: "Talati Silver Detergent Cake" },
             ].map((product, idx) => (
               <div key={idx} className="flex-shrink-0 w-64 select-none">
                 <ProductCard image={product.image} title={product.title} productName={product.name} />

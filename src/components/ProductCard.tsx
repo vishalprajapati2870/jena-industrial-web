@@ -20,6 +20,7 @@ export const ProductCard = ({ image, title, productName }: ProductCardProps) => 
             src={image}
             alt={title}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            draggable={false}
           />
         </div>
         <div className="p-6 text-center">
