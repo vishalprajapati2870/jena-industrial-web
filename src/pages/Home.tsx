@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/ProductCard";
 import { CheckCircle, Award, Shield, Users } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useRef, useState } from "react";
 import heroImage from "@/assets/hero-chemical-powder.jpg";
 import qualityImage from "@/assets/quality-assurance.jpg";
 
@@ -27,6 +28,30 @@ import SILVER_150GM from "@/assets/SILVER 150GM.jpeg";
 import SILVER_80GM from "@/assets/SILVER 80GM.jpeg";
 
 const Home = () => {
+  const marqueeRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (!marqueeRef.current) return;
+    setIsDragging(true);
+    setStartX(e.pageX - marqueeRef.current.offsetLeft);
+    setScrollLeft(marqueeRef.current.scrollLeft);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging || !marqueeRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - marqueeRef.current.offsetLeft;
+    const walk = (x - startX) * 2;
+    marqueeRef.current.scrollLeft = scrollLeft - walk;
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
   const features = [
     {
       icon: Award,
@@ -82,8 +107,15 @@ const Home = () => {
             Our Products
           </h2>
         </div>
-        <div className="relative">
-          <div className="flex animate-marquee gap-8 hover:[animation-play-state:paused]">
+        <div 
+          ref={marqueeRef}
+          className={`relative overflow-x-auto scrollbar-hide cursor-grab ${isDragging ? 'cursor-grabbing' : ''}`}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseUp}
+        >
+          <div className={`flex gap-8 ${isDragging ? '' : 'animate-marquee hover:[animation-play-state:paused]'}`}>
             {[
               { image: SILVER_JUMBO, title: "Jambo Silver Detergent Cake", name: "Jambo Silver Detergent Cake" },
               { image: SILVER_NEW, title: "New Silver Detergent Cake", name: "New Silver Detergent Cake" },
@@ -105,7 +137,7 @@ const Home = () => {
               { image: SILVER_ORANGE, title: "Orange Silver Detergent Cake", name: "Orange Silver Detergent Cake" },
               { image: SILVER_YELLOW, title: "Yellow Silver Detergent Cake", name: "Yellow Silver Detergent Cake" },
             ].map((product, idx) => (
-              <div key={idx} className="flex-shrink-0 w-64">
+              <div key={idx} className="flex-shrink-0 w-64 select-none">
                 <ProductCard image={product.image} title={product.title} productName={product.name} />
               </div>
             ))}
