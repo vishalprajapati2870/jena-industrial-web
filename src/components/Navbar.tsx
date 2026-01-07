@@ -85,11 +85,7 @@ export const Navbar = ({ onBuyClick, user, onLogout }: NavbarProps) => {
             >
               <button
                 type="button"
-<<<<<<< HEAD
-                className="text-navbar-text text-sm font-bold uppercase tracking-wider hover:text-primary transition-colors flex items-center gap-1"
-=======
                 className="text-navbar-text font-medium hover:text-primary transition-colors flex items-center gap-1"
->>>>>>> fd1b896c32e99771de89d4461af2d54beb6456e8
               >
                 Products
                 <ChevronDown
