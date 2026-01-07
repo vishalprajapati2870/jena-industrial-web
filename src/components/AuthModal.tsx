@@ -25,56 +25,48 @@ export const AuthModal = ({ isOpen, onClose, onLoginSuccess }: AuthModalProps) =
 
   if (!isOpen) return null;
 
+  // Temporary test credentials
+  const TEST_USERNAME = "admin";
+  const TEST_PASSWORD = "admin123";
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    
+    // Simulate network delay
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
     try {
       if (isSignUp) {
-        // Sign Up
-        await authService.signup({
-            username: formData.name, // Mapping name to username for backend
-            email: formData.email,
-            password: formData.password,
-            phone_number: formData.phone
-        });
+        // For signup, just show success and switch to login
         toast({
           title: "Account Created!",
-          description: "Your account has been created. Please sign in.",
+          description: "Your account has been created. Please sign in with the test credentials.",
         });
-        setIsSignUp(false); // Switch to login
+        setIsSignUp(false);
       } else {
-        // Sign In
-        await authService.login({
-            username: formData.name, // Using name as username for now as per backend requirements, usually email is better but following backend model
-            password: formData.password
-        });
-        toast({
-          title: "Signed In!",
-          description: "Welcome back! You have successfully signed in.",
-        });
-        onLoginSuccess();
-        onClose();
+        // Sign In - Check against test credentials
+        if (formData.name === TEST_USERNAME && formData.password === TEST_PASSWORD) {
+          toast({
+            title: "Signed In!",
+            description: "Welcome back! You have successfully signed in.",
+          });
+          onLoginSuccess();
+          onClose();
+        } else {
+          throw new Error("Invalid credentials. Use Username: admin, Password: admin123");
+        }
       }
       setFormData({ name: "", email: "", phone: "", password: "" });
-      setFormData({ name: "", email: "", phone: "", password: "" });
     } catch (error: any) {
-        console.error(error);
-        let errorMessage = "Something went wrong. Please try again.";
-        if (error.response?.data?.detail) {
-            if (Array.isArray(error.response.data.detail)) {
-                errorMessage = error.response.data.detail.map((err: any) => err.msg).join(", ");
-            } else {
-                errorMessage = error.response.data.detail;
-            }
-        }
-        
-        toast({
-            variant: "destructive",
-            title: "Error",
-            description: errorMessage,
-        });
+      console.error(error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message || "Something went wrong. Please try again.",
+      });
     } finally {
-        setIsLoading(false);
+      setIsLoading(false);
     }
   };
 

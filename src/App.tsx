@@ -21,17 +21,22 @@ const App = () => {
   const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
-    checkAuthStatus();
+    // Check if user is stored in sessionStorage (temporary auth)
+    const storedUser = sessionStorage.getItem('tempUser');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
   }, []);
 
-  const checkAuthStatus = async () => {
-    const userData = await authService.checkAuth();
-    setUser(userData);
+  const handleLoginSuccess = () => {
+    const tempUser = { username: 'admin' };
+    setUser(tempUser);
+    sessionStorage.setItem('tempUser', JSON.stringify(tempUser));
   };
 
-  const handleLogout = async () => {
-    await authService.logout();
+  const handleLogout = () => {
     setUser(null);
+    sessionStorage.removeItem('tempUser');
   };
 
   return (
@@ -59,7 +64,7 @@ const App = () => {
             <AuthModal 
               isOpen={isAuthModalOpen} 
               onClose={() => setIsAuthModalOpen(false)}
-              onLoginSuccess={checkAuthStatus} 
+              onLoginSuccess={handleLoginSuccess} 
             />
           </div>
         </BrowserRouter>
