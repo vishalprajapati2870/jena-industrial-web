@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -12,11 +12,27 @@ import About from "./pages/About";
 import Products from "./pages/Products";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
+import { authService } from "@/services/api";
 
 const queryClient = new QueryClient();
 
 const App = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    checkAuthStatus();
+  }, []);
+
+  const checkAuthStatus = async () => {
+    const userData = await authService.checkAuth();
+    setUser(userData);
+  };
+
+  const handleLogout = async () => {
+    await authService.logout();
+    setUser(null);
+  };
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -25,7 +41,11 @@ const App = () => {
         <Sonner />
         <BrowserRouter>
           <div className="min-h-screen flex flex-col">
-            <Navbar onBuyClick={() => setIsAuthModalOpen(true)} />
+            <Navbar 
+              onBuyClick={() => setIsAuthModalOpen(true)} 
+              user={user}
+              onLogout={handleLogout}
+            />
             <main className="flex-1">
               <Routes>
                 <Route path="/" element={<Home />} />
@@ -36,12 +56,17 @@ const App = () => {
               </Routes>
             </main>
             <Footer />
-            <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
+            <AuthModal 
+              isOpen={isAuthModalOpen} 
+              onClose={() => setIsAuthModalOpen(false)}
+              onLoginSuccess={checkAuthStatus} 
+            />
           </div>
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
   );
 };
+
 
 export default App;

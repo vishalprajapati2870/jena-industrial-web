@@ -1,16 +1,20 @@
 import { useState } from "react";
-import { X } from "lucide-react";
+import { X, Loader2, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { authService } from "@/services/api";
 
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onLoginSuccess: () => void;
 }
 
-export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
+export const AuthModal = ({ isOpen, onClose, onLoginSuccess }: AuthModalProps) => {
   const [isSignUp, setIsSignUp] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -21,16 +25,57 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: isSignUp ? "Account Created!" : "Signed In!",
-      description: isSignUp 
-        ? "Welcome to Jena Marketing. Your account has been created." 
-        : "Welcome back! You have successfully signed in.",
-    });
-    setFormData({ name: "", email: "", phone: "", password: "" });
-    onClose();
+    setIsLoading(true);
+    try {
+      if (isSignUp) {
+        // Sign Up
+        await authService.signup({
+            username: formData.name, // Mapping name to username for backend
+            email: formData.email,
+            password: formData.password,
+            phone_number: formData.phone
+        });
+        toast({
+          title: "Account Created!",
+          description: "Your account has been created. Please sign in.",
+        });
+        setIsSignUp(false); // Switch to login
+      } else {
+        // Sign In
+        await authService.login({
+            username: formData.name, // Using name as username for now as per backend requirements, usually email is better but following backend model
+            password: formData.password
+        });
+        toast({
+          title: "Signed In!",
+          description: "Welcome back! You have successfully signed in.",
+        });
+        onLoginSuccess();
+        onClose();
+      }
+      setFormData({ name: "", email: "", phone: "", password: "" });
+      setFormData({ name: "", email: "", phone: "", password: "" });
+    } catch (error: any) {
+        console.error(error);
+        let errorMessage = "Something went wrong. Please try again.";
+        if (error.response?.data?.detail) {
+            if (Array.isArray(error.response.data.detail)) {
+                errorMessage = error.response.data.detail.map((err: any) => err.msg).join(", ");
+            } else {
+                errorMessage = error.response.data.detail;
+            }
+        }
+        
+        toast({
+            variant: "destructive",
+            title: "Error",
+            description: errorMessage,
+        });
+    } finally {
+        setIsLoading(false);
+    }
   };
 
   return (
@@ -79,23 +124,28 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-3">
-          {isSignUp && (
-            <Input
-              type="text"
-              placeholder="Full Name"
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className="h-12 bg-gray-50 border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:border-primary focus:ring-primary"
-            />
+          {/* We need Username for this specific backend implementation */}
+          {(isSignUp || !isSignUp) && (
+             <Input
+               type="text"
+               placeholder="Username"
+               value={formData.name}
+               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+               className="h-12 bg-gray-50 border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:border-primary focus:ring-primary"
+               required
+             />
           )}
           
-          <Input
+          {isSignUp && (
+             <Input
             type="email"
             placeholder="Email"
             value={formData.email}
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             className="h-12 bg-gray-50 border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:border-primary focus:ring-primary"
+            required
           />
+          )}
 
           {isSignUp && (
             <Input
@@ -107,20 +157,35 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
             />
           )}
 
-          <Input
-            type="password"
-            placeholder="Password"
-            value={formData.password}
-            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-            className="h-12 bg-gray-50 border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:border-primary focus:ring-primary"
-          />
+          <div className="relative">
+            <Input
+              type={showPassword ? "text" : "password"}
+              placeholder="Password"
+              value={formData.password}
+              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+              className="h-12 bg-gray-50 border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:border-primary focus:ring-primary pr-10"
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              {showPassword ? (
+                <EyeOff className="w-5 h-5" />
+              ) : (
+                <Eye className="w-5 h-5" />
+              )}
+            </button>
+          </div>
 
           {/* Submit Button */}
           <Button
             type="submit"
+            disabled={isLoading}
             className="w-full h-12 bg-primary text-white font-bold rounded-full hover:bg-primary/90 hover:shadow-[0_0_20px_rgba(20,184,166,0.4)] transition-all"
           >
-            {isSignUp ? "Create Account" : "Sign In"}
+            {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : (isSignUp ? "Create Account" : "Sign In")}
           </Button>
         </form>
 

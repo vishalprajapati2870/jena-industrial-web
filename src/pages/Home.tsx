@@ -60,15 +60,15 @@ const Home = () => {
         >
           <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-black/50"></div>
         </div>
-        <div className="relative z-10 text-center text-white max-w-3xl px-4">
-          <h1 className="text-5xl md:text-6xl font-heading font-bold mb-6">
+        <div className="relative z-10 text-center text-white max-w-4xl px-4">
+          <h1 className="text-5xl md:text-7xl font-heading font-bold mb-6 drop-shadow-lg">
             Welcome to Naval Soap Factory
           </h1>
-          <p className="text-xl md:text-2xl mb-8 font-light">
+          <p className="text-xl md:text-2xl mb-10 font-light drop-shadow-md">
             Your trusted partner in premium industrial detergent cake
           </p>
           <Link to="/products">
-            <Button className="bg-primary hover:bg-primary-hover text-primary-foreground font-medium px-8 py-6 text-lg">
+            <Button className="bg-primary hover:bg-primary-hover text-white font-bold uppercase tracking-wider px-10 py-7 text-lg rounded-md shadow-lg transition-all">
               View Products
             </Button>
           </Link>
