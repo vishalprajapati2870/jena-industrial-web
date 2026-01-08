@@ -10,9 +10,9 @@ export const Footer = () => {
           <div>
             <h3 className="text-xl font-heading font-bold mb-4">Naval Soap Factory</h3>
             <p className="text-sm leading-relaxed opacity-90">
-              Leading provider of high-quality industrial detergent cake with a commitment
-              to excellence, innovation, and sustainable manufacturing practices.
-              Trusted by industries worldwide.
+            “A leading manufacturer of high-quality detergent soaps and powders, 
+            committed to excellence, innovation, and sustainable manufacturing practices. 
+            Trusted by customers for reliable and effective cleaning solutions.”
             </p>
           </div>
 

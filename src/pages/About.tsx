@@ -21,21 +21,21 @@ const About = () => {
               Our Story
             </h2>
             <p className="text-lg text-body-text leading-relaxed mb-6">
-              Founded with a vision to revolutionize the industrial detergent sector, naval soap factory
-              has grown into a trusted name in detergent manufacturing and distribution. Our journey
-              began with a commitment to providing high-quality detergent products that meet the
-              evolving needs of diverse industries.
+            Founded with a vision to strengthen and modernize detergent production,
+            Naval Soap Factory has grown into a trusted name in the manufacturing of detergent 
+            soaps and detergent powders. Our journey began with a simple goal—to produce high-quality, 
+            effective cleaning products that meet the everyday needs of households and businesses.
             </p>
             <p className="text-lg text-body-text leading-relaxed mb-6">
-              Over the years, we have built strong relationships with clients worldwide, earning
-              their trust through consistent quality, reliability, and exceptional service. Our
-              state-of-the-art manufacturing facilities and rigorous quality control processes
-              ensure that every product meets international standards.
+            Over the years, we have built strong relationships with customers by consistently delivering 
+            reliable quality, performance, and value. Our well-equipped manufacturing facilities and strict 
+            quality control processes ensure that every detergent product meets high safety and performance 
+            standards.
             </p>
             <p className="text-lg text-body-text leading-relaxed">
-              Today, naval soap factory stands as a beacon of excellence in the detergent industry,
-              combining traditional values with modern innovation to deliver solutions that drive
-              success for our clients.
+            Today, Naval Soap Factory continues to move forward by blending traditional manufacturing values 
+            with modern techniques, providing dependable detergent solutions that support cleaner homes and 
+            healthier living.
             </p>
           </div>
         </div>
@@ -49,8 +49,8 @@ const About = () => {
               <Target className="w-16 h-16 text-primary mx-auto mb-4" />
               <h3 className="text-2xl font-heading font-bold text-heading mb-4">Our Mission</h3>
               <p className="text-body-text leading-relaxed">
-                To provide superior detergent products and services that empower industries,
-                ensuring safety, sustainability, and innovation in everything we do.
+              To manufacture high-quality detergent soaps and powders that deliver effective cleaning, 
+              promote safety, and support sustainable and innovative production practices.
               </p>
             </div>
 
@@ -58,8 +58,8 @@ const About = () => {
               <Eye className="w-16 h-16 text-primary mx-auto mb-4" />
               <h3 className="text-2xl font-heading font-bold text-heading mb-4">Our Vision</h3>
               <p className="text-body-text leading-relaxed">
-                To be the global leader in industrial detergent cake and powder, recognized for excellence,
-                integrity, and sustainable practices that shape the future of the industry.
+              To become a trusted leader in detergent cake and powder manufacturing, recognized for quality, 
+              integrity, and sustainable practices.
               </p>
             </div>
 
@@ -67,8 +67,8 @@ const About = () => {
               <Award className="w-16 h-16 text-primary mx-auto mb-4" />
               <h3 className="text-2xl font-heading font-bold text-heading mb-4">Our Values</h3>
               <p className="text-body-text leading-relaxed">
-                Quality, integrity, innovation, and customer satisfaction are the pillars that
-                guide our operations and define our commitment to excellence.
+              Quality, integrity, innovation, and customer satisfaction are the core values that 
+              guide our detergent manufacturing processes and define our commitment to excellence.
               </p>
             </div>
           </div>

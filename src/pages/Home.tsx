@@ -152,7 +152,7 @@ const Home = () => {
     {
       icon: Award,
       title: "Premium Quality",
-      description: "Industry-leading chemical products with rigorous testing",
+      description: "Industry-leading detergent products with rigorous testing",
     },
     {
       icon: Shield,
@@ -314,13 +314,11 @@ const Home = () => {
             Our Responsibility
           </h2>
           <p className="text-lg leading-relaxed max-w-4xl mx-auto opacity-90">
-            We are dedicated to sustainable manufacturing practices and
-            environmental stewardship. naval soap factory believes in responsible
-            detergent production that minimizes environmental impact while
-            delivering exceptional quality. Our commitment extends beyond products
-            to include ethical sourcing, waste reduction, and community engagement.
-            Together, we're building a cleaner, safer future for the detergent
-            industry.
+          At Naval Soap Factory, we take responsibility for delivering high-quality detergent soaps and powders that are
+          effective and environmentally conscious. We follow sustainable manufacturing practices and responsibly 
+          source our materials. Our focus is on reducing waste, conserving resources, and maintaining ethical standards.
+          Beyond production, we support cleaner homes and healthier communities through safe and reliable detergent 
+          solutions.
           </p>
         </div>
       </section>
