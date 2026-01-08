@@ -30,26 +30,17 @@ import SILVER_80GM from "@/assets/SILVER 80GM.jpeg";
 const Home = () => {
   const marqueeRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [hasDragged, setHasDragged] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const requestRef = useRef<number>();
-  const directionRef = useRef<number>(1); // 1 for left (default), -1 for right
-  const progressRef = useRef<number>(0);
-  const speed = 0.5; // Slower speed
+  const directionRef = useRef<number>(1);
+  const speed = 0.5;
 
   useEffect(() => {
     const scroll = () => {
       if (marqueeRef.current && !isPaused && !isDragging) {
-        // Accumulate fractional movement
-        progressRef.current += speed * directionRef.current;
-        
-        // Only apply if we have at least 1px of movement to apply? 
-        // Actually, let's just apply it and let the browser handle sub-pixels if it can, 
-        // or just rely on the integer part updates.
-        // Better: Keep 'virtual' position in progressRef synced with scrollLeft initially.
-        // Actually, simplest is:
-        
         const currentScroll = marqueeRef.current.scrollLeft;
         const newScroll = currentScroll + (speed * directionRef.current);
         
@@ -57,9 +48,9 @@ const Home = () => {
 
         // Loop Logic
         if (marqueeRef.current.scrollLeft >= marqueeRef.current.scrollWidth / 2) {
-             marqueeRef.current.scrollLeft = 0;
+          marqueeRef.current.scrollLeft = 0;
         } else if (marqueeRef.current.scrollLeft <= 0) {
-             marqueeRef.current.scrollLeft = marqueeRef.current.scrollWidth / 2;
+          marqueeRef.current.scrollLeft = marqueeRef.current.scrollWidth / 2;
         }
       }
       requestRef.current = requestAnimationFrame(scroll);
@@ -74,28 +65,30 @@ const Home = () => {
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     if (!marqueeRef.current) return;
     setIsDragging(true);
-    setIsPaused(true);
+    setHasDragged(false);
     setStartX(e.pageX - marqueeRef.current.offsetLeft);
     setScrollLeft(marqueeRef.current.scrollLeft);
   }, []);
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (!isDragging || !marqueeRef.current) return;
-    e.preventDefault();
     const x = e.pageX - marqueeRef.current.offsetLeft;
     const walk = (x - startX) * 2;
+    
+    // Only mark as dragged if moved more than 5px (to allow clicks)
+    if (Math.abs(walk) > 5) {
+      setHasDragged(true);
+      e.preventDefault();
+    }
+    
     let newScrollLeft = scrollLeft - walk;
 
-    // Determine direction based on drag
-    // If dragging LEFT (walk < 0 so newScrollLeft > old), we are pulling content left, so valid direction is 1.
-    // If dragging RIGHT (walk > 0 so newScrollLeft < old), we are pulling content right, so valid direction is -1.
     if (walk > 0) {
-        directionRef.current = -1;
+      directionRef.current = -1;
     } else if (walk < 0) {
-        directionRef.current = 1;
+      directionRef.current = 1;
     }
 
-    // Manual Drag Loop Logic
     const maxScroll = marqueeRef.current.scrollWidth / 2;
     if (newScrollLeft < 0) {
       newScrollLeft = maxScroll + newScrollLeft;
@@ -118,7 +111,7 @@ const Home = () => {
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
     if (!marqueeRef.current) return;
     setIsDragging(true);
-    setIsPaused(true);
+    setHasDragged(false);
     setStartX(e.touches[0].pageX - marqueeRef.current.offsetLeft);
     setScrollLeft(marqueeRef.current.scrollLeft);
   }, []);
@@ -127,21 +120,25 @@ const Home = () => {
     if (!isDragging || !marqueeRef.current) return;
     const x = e.touches[0].pageX - marqueeRef.current.offsetLeft;
     const walk = (x - startX) * 2;
+    
+    if (Math.abs(walk) > 5) {
+      setHasDragged(true);
+    }
+    
     let newScrollLeft = scrollLeft - walk;
 
     if (walk > 0) {
-        directionRef.current = -1;
+      directionRef.current = -1;
     } else if (walk < 0) {
-        directionRef.current = 1;
+      directionRef.current = 1;
     }
 
-     // Manual Drag Loop Logic
-     const maxScroll = marqueeRef.current.scrollWidth / 2;
-     if (newScrollLeft < 0) {
-       newScrollLeft = maxScroll + newScrollLeft;
-     } else if (newScrollLeft >= maxScroll) {
-       newScrollLeft = newScrollLeft - maxScroll;
-     }
+    const maxScroll = marqueeRef.current.scrollWidth / 2;
+    if (newScrollLeft < 0) {
+      newScrollLeft = maxScroll + newScrollLeft;
+    } else if (newScrollLeft >= maxScroll) {
+      newScrollLeft = newScrollLeft - maxScroll;
+    }
 
     marqueeRef.current.scrollLeft = newScrollLeft;
   }, [isDragging, startX, scrollLeft]);
@@ -208,24 +205,15 @@ const Home = () => {
         </div>
         <div 
           ref={marqueeRef}
-          className={`relative overflow-x-hidden whitespace-nowrap scrollbar-hide select-none ${isDragging ? 'cursor-grabbing [&_a]:pointer-events-none' : 'cursor-grab'}`}
+          className={`relative overflow-x-hidden whitespace-nowrap scrollbar-hide select-none ${hasDragged ? 'cursor-grabbing [&_a]:pointer-events-none' : 'cursor-grab'}`}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseUp}
+          onMouseLeave={() => { handleMouseUp(); setIsPaused(false); }}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
-          // Removing onMouseEnter since we want it to keep moving unless actively dragged?
-          // User said "one time stop after finish all product i want to here infinite loop"
-          // User also said "double click and move" - usually means Drag.
-          // Let's keep hover-pause for usability, or remove it if they want continuous flow.
-          // User said "stop after finish" was the OLD behavior they didn't want.
-          // "slight slow marqee and after the seoble click than move" -> maybe they want it to pause on click, then move on double click?
-          // "When user move double click and move that direction in continues move" -> Dragging dictates direction.
-          // I will keep hover pause OFF for now to emphasize the "continuous move" unless they explicitly asked for pause.
-          // Actually, standard marquee behavior usually pauses on hover. I'll COMMENT IT OUT for now to be "continuous".
-          // onMouseEnter={() => setIsPaused(true)} 
+          onMouseEnter={() => setIsPaused(true)}
         >
           <div className="flex gap-8">
             {[
