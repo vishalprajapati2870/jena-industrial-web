@@ -83,15 +83,15 @@ export const Navbar = ({ onBuyClick, user, onLogout }: NavbarProps) => {
               onMouseEnter={handleProductsMouseEnter}
               onMouseLeave={handleProductsMouseLeave}
             >
-              <button
-                type="button"
+              <Link
+                to="/products"
                 className="text-navbar-text font-medium hover:text-primary transition-colors flex items-center gap-1"
               >
                 Products
                 <ChevronDown
                   className={`w-4 h-4 transition-transform duration-200 ${productsOpen ? "rotate-180" : "rotate-0"}`}
                 />
-              </button>
+              </Link>
 
               {productsOpen && (
                 <div
