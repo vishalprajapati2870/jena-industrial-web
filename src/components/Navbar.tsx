@@ -1,11 +1,13 @@
 import { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, Sparkles, Cookie } from "lucide-react";
+import { ChevronDown, Sparkles, Cookie, ShoppingBag } from "lucide-react";
+import { useCart } from "@/contexts/CartContext";
 
 export const Navbar = () => {
   const [productsOpen, setProductsOpen] = useState(false);
   const hoverTimeoutRef = useRef<number | null>(null);
+  const { cartCount } = useCart();
 
   const handleProductsMouseEnter = () => {
     if (hoverTimeoutRef.current) {
@@ -46,7 +48,7 @@ export const Navbar = () => {
   ];
 
   return (
-    <nav className="bg-background border-b border-border sticky top-0 z-50 shadow-sm">
+    <nav className="bg-background border-b border-border sticky top-0 z-50 shadow-sm print:hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
@@ -70,7 +72,7 @@ export const Navbar = () => {
             >
               About Us
             </Link>
-            
+
             {/* Products Dropdown */}
             <div
               className="relative"
@@ -91,7 +93,7 @@ export const Navbar = () => {
               {productsOpen && (
                 <div
                   className="absolute left-1/2 -translate-x-1/2 top-full mt-2 bg-background border border-border rounded-lg shadow-xl z-50 w-[650px]"
-                  style={{ 
+                  style={{
                     position: 'absolute',
                     transform: 'translateX(-50%)',
                   }}
@@ -155,11 +157,19 @@ export const Navbar = () => {
 
           {/* Right Side Actions */}
           <div className="flex items-center gap-4">
-            <Link to="/products">
+            <Link to="/cart">
               <Button
-                  className="bg-primary hover:bg-primary-hover text-white font-bold uppercase tracking-wider px-6 rounded-full shadow-lg transition-all"
+                variant="outline"
+                className="relative px-6 h-10 border-border text-foreground hover:bg-muted hover:text-primary transition-all rounded-full flex items-center gap-2 font-bold uppercase tracking-wider"
+                aria-label="Shopping Cart"
               >
-                  Buy Product
+                <ShoppingBag className="w-5 h-5" />
+                Cart
+                {cartCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-primary text-white text-[10px] font-bold h-4 w-4 flex items-center justify-center rounded-full">
+                    {cartCount}
+                  </span>
+                )}
               </Button>
             </Link>
           </div>
