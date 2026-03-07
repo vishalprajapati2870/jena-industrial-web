@@ -1,7 +1,7 @@
 import { useCart } from "@/contexts/CartContext";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
-import { Printer, ArrowLeft } from "lucide-react";
+import { Printer, ArrowLeft, Share2 } from "lucide-react";
 
 const Checkout = () => {
   const { cartItems } = useCart();
@@ -47,6 +47,29 @@ const Checkout = () => {
     day: "numeric",
   });
 
+  const handleShare = async () => {
+    let billText = `Naval Soap Factory - Invoice ${invoiceNumber}\nDate: ${dateStr}\n\n`;
+    billText += `Description\tQty\tUnit Price\tAmount\n`;
+    billText += `----------------------------------------------------\n`;
+    
+    cartItems.forEach(item => {
+      billText += `${item.name}\t${item.quantity}\t₹${item.price}\t₹${Number(item.price) * item.quantity}\n`;
+    });
+    
+    billText += `----------------------------------------------------\n`;
+    billText += `Subtotal: ₹${calculateSubtotal().toFixed(2)}\n`;
+    billText += `Estimated Tax (18%): ₹${calculateTax().toFixed(2)}\n`;
+    billText += `Total: ₹${calculateTotal().toFixed(2)}\n\n`;
+    billText += `Thank you for your business!`;
+
+    const targetEmail = "prajapatikushalmukeshkumar@gmail.com";
+    const subject = encodeURIComponent(`Invoice ${invoiceNumber}`);
+    const body = encodeURIComponent(billText);
+    
+    // Open default mail client with pre-filled details to the specified email address
+    window.location.href = `mailto:${targetEmail}?subject=${subject}&body=${body}`;
+  };
+
   return (
     <div className="min-h-screen bg-background py-10 print:py-0 print:bg-white">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -61,14 +84,25 @@ const Checkout = () => {
             Back to Cart
           </button>
 
-          <Button
-            onClick={handlePrint}
-            variant="outline"
-            className="flex items-center gap-2"
-          >
-            <Printer className="w-4 h-4" />
-            Print Bill
-          </Button>
+          <div className="flex gap-3">
+            <Button
+              onClick={handleShare}
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              <Share2 className="w-4 h-4" />
+              Share
+            </Button>
+            
+            <Button
+              onClick={handlePrint}
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              <Printer className="w-4 h-4" />
+              Print Bill
+            </Button>
+          </div>
         </div>
 
         {/* Invoice Paper */}

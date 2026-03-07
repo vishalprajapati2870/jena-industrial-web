@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/ProductCard";
-import { CheckCircle, Award, Shield, Users } from "lucide-react";
+import { CheckCircle, Award, Shield, Users, ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useRef, useState, useCallback, useEffect } from "react";
+import { useRef } from "react";
 import heroImage from "@/assets/hero-chemical-powder.jpg";
 import qualityImage from "@/assets/quality-assurance.jpg";
 
@@ -28,125 +28,19 @@ import SILVER_150GM from "@/assets/SILVER 150GM.jpeg";
 import SILVER_80GM from "@/assets/SILVER 80GM.jpeg";
 
 const Home = () => {
-  const marqueeRef = useRef<HTMLDivElement>(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const [hasDragged, setHasDragged] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [scrollLeft, setScrollLeft] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
-  const requestRef = useRef<number>();
-  const directionRef = useRef<number>(1);
-  const speed = 0.5;
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const scroll = () => {
-      if (marqueeRef.current && !isPaused && !isDragging) {
-        const currentScroll = marqueeRef.current.scrollLeft;
-        const newScroll = currentScroll + (speed * directionRef.current);
-        
-        marqueeRef.current.scrollLeft = newScroll;
-
-        // Loop Logic
-        if (marqueeRef.current.scrollLeft >= marqueeRef.current.scrollWidth / 2) {
-          marqueeRef.current.scrollLeft = 0;
-        } else if (marqueeRef.current.scrollLeft <= 0) {
-          marqueeRef.current.scrollLeft = marqueeRef.current.scrollWidth / 2;
-        }
-      }
-      requestRef.current = requestAnimationFrame(scroll);
-    };
-    
-    requestRef.current = requestAnimationFrame(scroll);
-    return () => {
-      if (requestRef.current) cancelAnimationFrame(requestRef.current);
-    };
-  }, [isPaused, isDragging]);
-
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    if (!marqueeRef.current) return;
-    setIsDragging(true);
-    setHasDragged(false);
-    setStartX(e.pageX - marqueeRef.current.offsetLeft);
-    setScrollLeft(marqueeRef.current.scrollLeft);
-  }, []);
-
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    if (!isDragging || !marqueeRef.current) return;
-    const x = e.pageX - marqueeRef.current.offsetLeft;
-    const walk = (x - startX) * 2;
-    
-    // Only mark as dragged if moved more than 5px (to allow clicks)
-    if (Math.abs(walk) > 5) {
-      setHasDragged(true);
-      e.preventDefault();
+  const slideLeft = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({ left: -300, behavior: 'smooth' });
     }
-    
-    let newScrollLeft = scrollLeft - walk;
+  };
 
-    if (walk > 0) {
-      directionRef.current = -1;
-    } else if (walk < 0) {
-      directionRef.current = 1;
+  const slideRight = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({ left: 300, behavior: 'smooth' });
     }
-
-    const maxScroll = marqueeRef.current.scrollWidth / 2;
-    if (newScrollLeft < 0) {
-      newScrollLeft = maxScroll + newScrollLeft;
-    } else if (newScrollLeft >= maxScroll) {
-      newScrollLeft = newScrollLeft - maxScroll;
-    }
-
-    marqueeRef.current.scrollLeft = newScrollLeft;
-  }, [isDragging, startX, scrollLeft]);
-
-  const handleMouseUp = useCallback(() => {
-    setIsDragging(false);
-    // Determine continue direction? 
-    // It's already set in MouseMove.
-    
-    // Optional: Add some momentum or strictly just resume? User said "continues move".
-    setIsPaused(false);
-  }, []);
-
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    if (!marqueeRef.current) return;
-    setIsDragging(true);
-    setHasDragged(false);
-    setStartX(e.touches[0].pageX - marqueeRef.current.offsetLeft);
-    setScrollLeft(marqueeRef.current.scrollLeft);
-  }, []);
-
-  const handleTouchMove = useCallback((e: React.TouchEvent) => {
-    if (!isDragging || !marqueeRef.current) return;
-    const x = e.touches[0].pageX - marqueeRef.current.offsetLeft;
-    const walk = (x - startX) * 2;
-    
-    if (Math.abs(walk) > 5) {
-      setHasDragged(true);
-    }
-    
-    let newScrollLeft = scrollLeft - walk;
-
-    if (walk > 0) {
-      directionRef.current = -1;
-    } else if (walk < 0) {
-      directionRef.current = 1;
-    }
-
-    const maxScroll = marqueeRef.current.scrollWidth / 2;
-    if (newScrollLeft < 0) {
-      newScrollLeft = maxScroll + newScrollLeft;
-    } else if (newScrollLeft >= maxScroll) {
-      newScrollLeft = newScrollLeft - maxScroll;
-    }
-
-    marqueeRef.current.scrollLeft = newScrollLeft;
-  }, [isDragging, startX, scrollLeft]);
-
-  const handleTouchEnd = useCallback(() => {
-    setIsDragging(false);
-    setIsPaused(false);
-  }, []);
+  };
 
   const features = [
     {
@@ -196,26 +90,39 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Our Products - Marquee Scroll */}
-      <section className="py-16 bg-background overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-4xl font-heading font-bold text-heading text-center mb-12">
-            Our Products
-          </h2>
-        </div>
-        <div 
-          ref={marqueeRef}
-          className={`relative overflow-x-hidden whitespace-nowrap scrollbar-hide select-none ${hasDragged ? 'cursor-grabbing [&_a]:pointer-events-none' : 'cursor-grab'}`}
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={() => { handleMouseUp(); setIsPaused(false); }}
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-          onMouseEnter={() => setIsPaused(true)}
-        >
-          <div className="flex gap-8">
+      {/* Our Products - Scrollable with Buttons */}
+      <section className="py-16 bg-background">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          <div className="flex items-center justify-between mb-12">
+            <h2 className="text-4xl font-heading font-bold text-heading">
+              Our Products
+            </h2>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={slideLeft}
+                className="rounded-full w-10 h-10 flex items-center justify-center border-border hover:bg-muted"
+                aria-label="Previous products"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </Button>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={slideRight}
+                className="rounded-full w-10 h-10 flex items-center justify-center border-border hover:bg-muted"
+                aria-label="Next products"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </Button>
+            </div>
+          </div>
+          
+          <div 
+            ref={scrollContainerRef}
+            className="flex gap-6 overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-4 scroll-smooth"
+          >
             {[
               { image: SILVER_JUMBO, title: "Jambo Silver Detergent Cake", name: "Jambo Silver Detergent Cake" },
               { image: SILVER_NEW, title: "New Silver Detergent Cake", name: "New Silver Detergent Cake" },
@@ -229,21 +136,8 @@ const Home = () => {
               { image: CHETAK, title: "Chetak Silver Detergent Cake", name: "Chetak Silver Detergent Cake" },
               { image: DAYAWAN, title: "Dayawan Silver Detergent Cake", name: "Dayawan Silver Detergent Cake" },
               { image: TALATI, title: "Talati Silver Detergent Cake", name: "Talati Silver Detergent Cake" },
-              // Duplicate for seamless loop - Full list duplicated
-              { image: SILVER_JUMBO, title: "Jambo Silver Detergent Cake", name: "Jambo Silver Detergent Cake" },
-              { image: SILVER_NEW, title: "New Silver Detergent Cake", name: "New Silver Detergent Cake" },
-              { image: SILVER_SEMI, title: "Semi Silver Detergent Cake", name: "Semi Silver Detergent Cake" },
-              { image: SILVER_BLUE, title: "Blue Silver Detergent Cake", name: "Blue Silver Detergent Cake" },
-              { image: SILVER_ORANGE, title: "Orange Silver Detergent Cake", name: "Orange Silver Detergent Cake" },
-              { image: SILVER_YELLOW, title: "Yellow Silver Detergent Cake", name: "Yellow Silver Detergent Cake" },
-              { image: SILVER_HERBAL, title: "Herbal Silver Detergent Cake", name: "Herbal Silver Detergent Cake" },
-              { image: SILVER_WONDER, title: "Wonder Silver Detergent Cake", name: "Wonder Silver Detergent Cake" },
-              { image: SILVER_ULTRA, title: "Jambo Ultra White Silver Detergent Cake", name: "Jambo Ultra White Silver Detergent Cake" },
-              { image: CHETAK, title: "Chetak Silver Detergent Cake", name: "Chetak Silver Detergent Cake" },
-              { image: DAYAWAN, title: "Dayawan Silver Detergent Cake", name: "Dayawan Silver Detergent Cake" },
-              { image: TALATI, title: "Talati Silver Detergent Cake", name: "Talati Silver Detergent Cake" },
             ].map((product, idx) => (
-              <div key={idx} className="flex-shrink-0 w-64 select-none">
+              <div key={idx} className="flex-shrink-0 w-64 snap-start">
                 <ProductCard image={product.image} title={product.title} productName={product.name} />
               </div>
             ))}
