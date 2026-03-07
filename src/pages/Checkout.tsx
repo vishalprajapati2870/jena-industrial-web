@@ -1,11 +1,14 @@
+import { useState } from "react";
 import { useCart } from "@/contexts/CartContext";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
-import { Printer, ArrowLeft, Share2 } from "lucide-react";
+import { Printer, ArrowLeft, Share2, ShoppingBag, CheckCircle2 } from "lucide-react";
 
 const Checkout = () => {
-  const { cartItems } = useCart();
+  const { cartItems, clearCart } = useCart();
   const navigate = useNavigate();
+  const [orderPlaced, setOrderPlaced] = useState(false);
+  const [placedInvoice, setPlacedInvoice] = useState("");
 
   const calculateSubtotal = () => {
     return cartItems.reduce(
@@ -25,6 +28,52 @@ const Checkout = () => {
   const handlePrint = () => {
     window.print();
   };
+
+  const handlePlaceOrder = () => {
+    const today = new Date().toISOString().split("T")[0];
+    const existing = JSON.parse(localStorage.getItem("nsf_orders") || "[]");
+    const newOrders = cartItems.map((item, idx) => ({
+      id: `${invoiceNumber}${cartItems.length > 1 ? `-${idx + 1}` : ""}`,
+      customerName: "Web Customer",
+      customerEmail: "web@order.com",
+      product: item.name,
+      category: item.name.toLowerCase().includes("powder") ? "Detergent Powder" : "Detergent Cake",
+      quantity: item.quantity,
+      amount: Number(item.price) * item.quantity,
+      date: today,
+      status: "PENDING",
+    }));
+    localStorage.setItem("nsf_orders", JSON.stringify([...newOrders, ...existing]));
+    setPlacedInvoice(invoiceNumber);
+    setOrderPlaced(true);
+    clearCart();
+  };
+
+  // ── Order success screen ──────────────────────────────────────────────────────
+  if (orderPlaced) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center px-4">
+        <div className="max-w-md w-full text-center flex flex-col items-center gap-6">
+          <div className="bg-emerald-100 rounded-full p-6">
+            <CheckCircle2 className="w-16 h-16 text-emerald-500" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-heading font-bold text-primary mb-2">Order Placed!</h1>
+            <p className="text-muted-foreground">Thank you! We've received your order and will process it shortly.</p>
+          </div>
+          <div className="bg-muted/40 border border-border rounded-xl px-8 py-4 w-full">
+            <p className="text-sm text-muted-foreground">Invoice Number</p>
+            <p className="text-lg font-mono font-bold text-foreground mt-1">{placedInvoice}</p>
+          </div>
+          <Link to="/products" className="w-full">
+            <Button className="w-full h-12 text-base font-bold rounded-full bg-primary hover:bg-primary/90 text-white">
+              Continue Shopping
+            </Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   if (cartItems.length === 0) {
     return (
@@ -168,6 +217,18 @@ const Checkout = () => {
                 <span className="text-primary">₹{calculateTotal().toFixed(2)}</span>
               </div>
             </div>
+          </div>
+
+          {/* Place Order */}
+          <div className="mt-8 flex justify-end print:hidden">
+            <Button
+              onClick={handlePlaceOrder}
+              size="lg"
+              className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-white font-bold text-base px-10 h-12 rounded-full shadow-md hover:shadow-lg transition-all"
+            >
+              <ShoppingBag className="w-5 h-5" />
+              Place Order
+            </Button>
           </div>
 
           {/* Footer */}
