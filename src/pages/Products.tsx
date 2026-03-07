@@ -302,7 +302,6 @@ const Products = ({ onBuyClick }: ProductsProps) => {
           <ProductDetail
             product={selectedProduct}
             onBack={handleBack}
-            onBuyClick={onBuyClick}
             relatedProducts={relatedProducts}
             onSelectProduct={handleSelectProduct}
           />
