@@ -255,7 +255,8 @@ const ProductDetail = ({ product, onBack, relatedProducts, onSelectProduct }: {
       </div>
     )}
   </div>
-);
+  );
+};
 
 const Products = ({ onBuyClick }: ProductsProps) => {
   const [searchParams, setSearchParams] = useSearchParams();
