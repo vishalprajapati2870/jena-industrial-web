@@ -31,20 +31,6 @@ interface Order {
   status: Status;
 }
 
-// ─── Mock Data ─────────────────────────────────────────────────────────────────
-const mockOrders: Order[] = [
-  { id: "NSF-100123", customerName: "Ravi Patel", customerEmail: "ravipatel@gmail.com", product: "Naval Silver Detergent Powder – 5 kg Bag", category: "Detergent Powder", quantity: 10, amount: 2500, date: "2026-03-01", status: "CONFIRMED" },
-  { id: "NSF-100124", customerName: "Sahil Mehta", customerEmail: "sahil@gmail.com", product: "Jambo Silver Detergent Cake", category: "Detergent Cake", quantity: 5, amount: 750, date: "2026-03-02", status: "PENDING" },
-  { id: "NSF-100125", customerName: "Vishal Shah", customerEmail: "vishal@gmail.com", product: "Naval Silver Detergent Powder – 2 kg Bag", category: "Detergent Powder", quantity: 20, amount: 3200, date: "2026-03-03", status: "CONFIRMED" },
-  { id: "NSF-100126", customerName: "Priya Joshi", customerEmail: "priya@gmail.com", product: "Blue Silver Detergent Cake", category: "Detergent Cake", quantity: 8, amount: 960, date: "2026-03-04", status: "CANCELLED" },
-  { id: "NSF-100127", customerName: "Kushal Prajapati", customerEmail: "kushal@gmail.com", product: "Naval Silver Detergent Powder – 1 kg Bag", category: "Detergent Powder", quantity: 50, amount: 4500, date: "2026-03-05", status: "CONFIRMED" },
-  { id: "NSF-100128", customerName: "Amit Verma", customerEmail: "amit@gmail.com", product: "Herbal Silver Detergent Cake", category: "Detergent Cake", quantity: 12, amount: 1440, date: "2026-03-05", status: "PENDING" },
-  { id: "NSF-100129", customerName: "Neha Gupta", customerEmail: "neha@gmail.com", product: "Wonder Silver Detergent Cake", category: "Detergent Cake", quantity: 6, amount: 780, date: "2026-03-06", status: "CONFIRMED" },
-  { id: "NSF-100130", customerName: "Deepak Singh", customerEmail: "deepak@gmail.com", product: "Naval Silver Detergent Powder – 500 gms Bag", category: "Detergent Powder", quantity: 100, amount: 5000, date: "2026-03-06", status: "PENDING" },
-  { id: "NSF-100131", customerName: "Anjali Sharma", customerEmail: "anjali@gmail.com", product: "Jambo Ultra White Silver Detergent Cake", category: "Detergent Cake", quantity: 3, amount: 450, date: "2026-03-07", status: "CANCELLED" },
-  { id: "NSF-100132", customerName: "Mohan Das", customerEmail: "mohan@gmail.com", product: "Naval Silver Detergent Powder – 150 gms Bag", category: "Detergent Powder", quantity: 200, amount: 3000, date: "2026-03-07", status: "CONFIRMED" },
-];
-
 // ─── Status Badge ──────────────────────────────────────────────────────────────
 const StatusBadge = ({ status }: { status: Status }) => {
   const styles: Record<Status, string> = {
@@ -85,13 +71,19 @@ const AdminDashboard = () => {
   const [search, setSearch] = useState("");
   const [activeFilter, setActiveFilter] = useState<"ALL" | Status>("ALL");
   const [openMenu, setOpenMenu] = useState<string | null>(null);
-  const [orders, setOrders] = useState<Order[]>(mockOrders);
+  const [orders, setOrders] = useState<Order[]>(() =>
+    JSON.parse(localStorage.getItem("nsf_orders") || "[]")
+  );
 
-  // Guard: redirect if not authenticated
+  // Guard auth + auto-reload orders when tab is focused
   useEffect(() => {
     if (localStorage.getItem("admin_auth") !== "true") {
       navigate("/admin");
     }
+    const reload = () =>
+      setOrders(JSON.parse(localStorage.getItem("nsf_orders") || "[]"));
+    window.addEventListener("focus", reload);
+    return () => window.removeEventListener("focus", reload);
   }, [navigate]);
 
   const handleLogout = () => {
@@ -120,7 +112,11 @@ const AdminDashboard = () => {
   });
 
   const updateStatus = (id: string, status: Status) => {
-    setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, status } : o)));
+    setOrders((prev) => {
+      const updated = prev.map((o) => (o.id === id ? { ...o, status } : o));
+      localStorage.setItem("nsf_orders", JSON.stringify(updated));
+      return updated;
+    });
     setOpenMenu(null);
   };
 
