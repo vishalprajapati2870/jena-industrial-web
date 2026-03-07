@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, Sparkles, Cookie, ShoppingBag } from "lucide-react";
+import { ChevronDown, Sparkles, Cookie, ShoppingBag, Shield } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 
 export const Navbar = () => {
@@ -157,6 +157,16 @@ export const Navbar = () => {
 
           {/* Right Side Actions */}
           <div className="flex items-center gap-4">
+            <Link to="/admin">
+              <Button
+                variant="outline"
+                className="px-6 h-10 border-border text-foreground hover:bg-muted hover:text-primary transition-all rounded-full flex items-center gap-2 font-bold uppercase tracking-wider"
+                aria-label="Admin Panel"
+              >
+                <Shield className="w-5 h-5" />
+                Admin
+              </Button>
+            </Link>
             <Link to="/cart">
               <Button
                 variant="outline"
