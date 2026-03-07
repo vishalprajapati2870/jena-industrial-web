@@ -1,15 +1,9 @@
 import { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, Sparkles, Cookie, User, LogOut } from "lucide-react";
+import { ChevronDown, Sparkles, Cookie } from "lucide-react";
 
-interface NavbarProps {
-  onBuyClick: () => void;
-  user: any;
-  onLogout: () => void;
-}
-
-export const Navbar = ({ onBuyClick, user, onLogout }: NavbarProps) => {
+export const Navbar = () => {
   const [productsOpen, setProductsOpen] = useState(false);
   const hoverTimeoutRef = useRef<number | null>(null);
 
@@ -161,31 +155,13 @@ export const Navbar = ({ onBuyClick, user, onLogout }: NavbarProps) => {
 
           {/* Right Side Actions */}
           <div className="flex items-center gap-4">
-              {user ? (
-                  <div className="flex items-center">
-                      <span className="text-navbar-text font-medium flex items-center gap-2">
-                        <User className="w-4 h-4" />
-                        {user.username}
-                      </span>
-                      
-                      <div className="h-6 w-[1px] bg-border mx-4"></div>
-
-                      <button
-                        onClick={onLogout}
-                        className="text-destructive hover:text-destructive/80 font-medium flex items-center gap-2 transition-colors"
-                      >
-                        <LogOut className="w-4 h-4" />
-                        Logout
-                      </button>
-                  </div>
-              ) : (
-                 <Button
-                    onClick={onBuyClick}
-                    className="bg-primary hover:bg-primary-hover text-white font-bold uppercase tracking-wider px-6 rounded-full shadow-lg transition-all"
-                >
-                    Buy Product
-                </Button>
-              )}
+            <Link to="/products">
+              <Button
+                  className="bg-primary hover:bg-primary-hover text-white font-bold uppercase tracking-wider px-6 rounded-full shadow-lg transition-all"
+              >
+                  Buy Product
+              </Button>
+            </Link>
           </div>
         </div>
       </div>

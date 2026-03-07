@@ -25,9 +25,7 @@ import SILVER_500GM from "@/assets/SILVER 500GM.jpeg";
 import SILVER_150GM from "@/assets/SILVER 150GM.jpeg";
 import SILVER_80GM from "@/assets/SILVER 80GM.jpeg";
 
-interface ProductsProps {
-  onBuyClick: () => void;
-}
+// Removed ProductsProps
 
 interface ProductData {
   name: string;
@@ -258,7 +256,7 @@ const ProductDetail = ({ product, onBack, relatedProducts, onSelectProduct }: {
   );
 };
 
-const Products = ({ onBuyClick }: ProductsProps) => {
+const Products = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedProduct, setSelectedProduct] = useState<ProductData | null>(null);
   const [activeCategory, setActiveCategory] = useState<string>("All");
