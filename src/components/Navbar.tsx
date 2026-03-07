@@ -85,6 +85,7 @@ export const Navbar = ({ onBuyClick, user, onLogout }: NavbarProps) => {
             >
               <Link
                 to="/products"
+                onClick={() => setProductsOpen(false)}
                 className="text-navbar-text font-medium hover:text-primary transition-colors flex items-center gap-1"
               >
                 Products
