@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { ArrowLeft, ShoppingCart } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 
 // Import all product images
 import SILVER_JUMBO from "@/assets/SILVER JUMBO CAKE.jpeg";
@@ -101,13 +103,36 @@ const ProductGridCard = ({ product, onClick }: { product: ProductData; onClick: 
   </div>
 );
 
-const ProductDetail = ({ product, onBack, onBuyClick, relatedProducts, onSelectProduct }: {
+const ProductDetail = ({ product, onBack, relatedProducts, onSelectProduct }: {
   product: ProductData;
   onBack: () => void;
-  onBuyClick: () => void;
   relatedProducts: ProductData[];
   onSelectProduct: (p: ProductData) => void;
-}) => (
+}) => {
+  const [quantity, setQuantity] = useState<string>("500");
+  const [customQty, setCustomQty] = useState<string>("");
+  const [error, setError] = useState<string>("");
+  const recommendedQtys = [500, 1000, 1500];
+
+  const getActiveQty = (): number => {
+    if (quantity === "custom") return parseInt(customQty) || 0;
+    return parseInt(quantity);
+  };
+
+  const handleAddToCart = () => {
+    const qty = getActiveQty();
+    if (qty < 50) {
+      setError("Minimum order quantity is 50 items");
+      return;
+    }
+    setError("");
+    toast({
+      title: "Added to Cart ✓",
+      description: `${qty} × ${product.name} added to your cart.`,
+    });
+  };
+
+  return (
   <div>
     <button
       onClick={onBack}
@@ -144,8 +169,56 @@ const ProductDetail = ({ product, onBack, onBuyClick, relatedProducts, onSelectP
               </div>
             ))}
           </div>
-          <Button onClick={onBuyClick} className="w-full bg-primary hover:bg-primary-hover text-primary-foreground font-medium uppercase tracking-wide">
-            Buy Product
+
+          {/* Quantity Selection */}
+          <div className="mb-4">
+            <label className="text-sm font-medium text-heading mb-2 block">Select Quantity (per box)</label>
+            <div className="flex gap-2 mb-3">
+              {recommendedQtys.map((q) => (
+                <button
+                  key={q}
+                  onClick={() => { setQuantity(String(q)); setError(""); }}
+                  className={`px-4 py-2 rounded-md text-sm font-medium border transition-colors ${
+                    quantity === String(q)
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "bg-muted text-muted-foreground border-border hover:border-primary"
+                  }`}
+                >
+                  {q}
+                </button>
+              ))}
+              <button
+                onClick={() => { setQuantity("custom"); setError(""); }}
+                className={`px-4 py-2 rounded-md text-sm font-medium border transition-colors ${
+                  quantity === "custom"
+                    ? "bg-primary text-primary-foreground border-primary"
+                    : "bg-muted text-muted-foreground border-border hover:border-primary"
+                }`}
+              >
+                Custom
+              </button>
+            </div>
+            {quantity === "custom" && (
+              <Input
+                type="number"
+                placeholder="Enter quantity (min 50)"
+                value={customQty}
+                onChange={(e) => { setCustomQty(e.target.value); setError(""); }}
+                min={50}
+                className="mb-2"
+              />
+            )}
+            {error && (
+              <p className="text-destructive text-xs font-medium">{error}</p>
+            )}
+          </div>
+
+          <Button
+            onClick={handleAddToCart}
+            className="w-full bg-primary hover:bg-primary-hover text-primary-foreground font-medium uppercase tracking-wide gap-2"
+          >
+            <ShoppingCart className="w-4 h-4" />
+            Add to Cart
           </Button>
         </div>
       </div>
