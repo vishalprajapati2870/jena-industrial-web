@@ -3,6 +3,7 @@ import { useCart } from "@/contexts/CartContext";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { Printer, ArrowLeft, Share2, ShoppingBag, CheckCircle2 } from "lucide-react";
+import html2canvas from "html2canvas";
 
 const Checkout = () => {
   const { cartItems, clearCart } = useCart();
@@ -32,18 +33,24 @@ const Checkout = () => {
   const handlePlaceOrder = () => {
     const today = new Date().toISOString().split("T")[0];
     const existing = JSON.parse(localStorage.getItem("nsf_orders") || "[]");
-    const newOrders = cartItems.map((item, idx) => ({
-      id: `${invoiceNumber}${cartItems.length > 1 ? `-${idx + 1}` : ""}`,
+    
+    // Group all cart items into a single order
+    const newOrder = {
+      id: invoiceNumber,
       customerName: "Web Customer",
       customerEmail: "web@order.com",
-      product: item.name,
-      category: item.name.toLowerCase().includes("powder") ? "Detergent Powder" : "Detergent Cake",
-      quantity: item.quantity,
-      amount: Number(item.price) * item.quantity,
+      items: cartItems.map((item) => ({
+        product: item.name,
+        category: item.name.toLowerCase().includes("powder") ? "Detergent Powder" : "Detergent Cake",
+        quantity: item.quantity,
+        amount: Number(item.price) * item.quantity,
+      })),
+      totalAmount: calculateTotal(),
       date: today,
       status: "PENDING",
-    }));
-    localStorage.setItem("nsf_orders", JSON.stringify([...newOrders, ...existing]));
+    };
+
+    localStorage.setItem("nsf_orders", JSON.stringify([newOrder, ...existing]));
     setPlacedInvoice(invoiceNumber);
     setOrderPlaced(true);
     clearCart();
@@ -97,26 +104,37 @@ const Checkout = () => {
   });
 
   const handleShare = async () => {
-    let billText = `Naval Soap Factory - Invoice ${invoiceNumber}\nDate: ${dateStr}\n\n`;
-    billText += `Description\tQty\tUnit Price\tAmount\n`;
-    billText += `----------------------------------------------------\n`;
-    
-    cartItems.forEach(item => {
-      billText += `${item.name}\t${item.quantity}\t₹${item.price}\t₹${Number(item.price) * item.quantity}\n`;
-    });
-    
-    billText += `----------------------------------------------------\n`;
-    billText += `Subtotal: ₹${calculateSubtotal().toFixed(2)}\n`;
-    billText += `Estimated Tax (18%): ₹${calculateTax().toFixed(2)}\n`;
-    billText += `Total: ₹${calculateTotal().toFixed(2)}\n\n`;
-    billText += `Thank you for your business!`;
-
-    const targetEmail = "prajapatikushalmukeshkumar@gmail.com";
-    const subject = encodeURIComponent(`Invoice ${invoiceNumber}`);
-    const body = encodeURIComponent(billText);
-    
-    // Open default mail client with pre-filled details to the specified email address
-    window.location.href = `mailto:${targetEmail}?subject=${subject}&body=${body}`;
+    const el = document.getElementById("invoice-paper");
+    if (!el) return;
+    try {
+      // Create a temporary clone to ensure we print what we see (ignoring print:hidden elements if we wanted, but html2canvas doesn't use media print by default)
+      const canvas = await html2canvas(el, { scale: 2 });
+      canvas.toBlob(async (blob) => {
+        if (!blob) return;
+        const file = new File([blob], `invoice-${invoiceNumber}.png`, { type: "image/png" });
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+          try {
+            await navigator.share({
+              files: [file],
+              title: `Invoice ${invoiceNumber}`,
+              text: "Here is your invoice from Naval Soap Factory",
+            });
+          } catch(err) {
+            console.log("Share skipped or failed", err);
+          }
+        } else {
+          // Fallback to download
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `invoice-${invoiceNumber}.png`;
+          a.click();
+          URL.revokeObjectURL(url);
+        }
+      }, "image/png");
+    } catch (err) {
+      console.error("Failed to generate image", err);
+    }
   };
 
   return (
@@ -155,7 +173,7 @@ const Checkout = () => {
         </div>
 
         {/* Invoice Paper */}
-        <div className="bg-card border border-border sm:rounded-lg sm:p-10 p-6 shadow-sm print:shadow-none print:border-none print:p-0">
+        <div id="invoice-paper" className="bg-card border border-border sm:rounded-lg sm:p-10 p-6 shadow-sm print:shadow-none print:border-none print:p-0">
 
           {/* Header */}
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 pb-6 border-b border-border">

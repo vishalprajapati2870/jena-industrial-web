@@ -13,20 +13,31 @@ import {
   TrendingUp,
   Users,
   IndianRupee,
+  Eye,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type Status = "PENDING" | "CONFIRMED" | "CANCELLED";
 
-interface Order {
-  id: string;
-  customerName: string;
-  customerEmail: string;
+interface OrderItem {
   product: string;
   category: string;
   quantity: number;
   amount: number;
+}
+
+interface Order {
+  id: string;
+  customerName: string;
+  customerEmail: string;
+  items?: OrderItem[]; // Optional for backwards compatibility with old placed orders
+  product?: string;     // Old format
+  category?: string;    // Old format
+  quantity?: number;    // Old format
+  amount?: number;      // Old format
+  totalAmount?: number; // New format
   date: string;
   status: Status;
 }
@@ -71,6 +82,7 @@ const AdminDashboard = () => {
   const [search, setSearch] = useState("");
   const [activeFilter, setActiveFilter] = useState<"ALL" | Status>("ALL");
   const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const [viewOrder, setViewOrder] = useState<Order | null>(null);
   const [orders, setOrders] = useState<Order[]>(() =>
     JSON.parse(localStorage.getItem("nsf_orders") || "[]")
   );
@@ -98,7 +110,7 @@ const AdminDashboard = () => {
   const cancelled = orders.filter((o) => o.status === "CANCELLED").length;
   const revenue   = orders
     .filter((o) => o.status === "CONFIRMED")
-    .reduce((sum, o) => sum + o.amount, 0);
+    .reduce((sum, o) => sum + (o.totalAmount || o.amount || 0), 0);
 
   // Filter + Search
   const filtered = orders.filter((o) => {
@@ -107,7 +119,8 @@ const AdminDashboard = () => {
     const matchSearch =
       o.id.toLowerCase().includes(q) ||
       o.customerName.toLowerCase().includes(q) ||
-      o.product.toLowerCase().includes(q);
+      (o.product && o.product.toLowerCase().includes(q)) ||
+      (o.items && o.items.some(item => item.product.toLowerCase().includes(q)));
     return matchFilter && matchSearch;
   });
 
@@ -201,8 +214,13 @@ const AdminDashboard = () => {
                 className="ml-2 p-2 rounded-lg border border-border text-muted-foreground hover:text-primary hover:border-primary transition-colors"
                 onClick={() => {
                   const rows = [
-                    ["Order ID","Customer","Email","Product","Category","Qty","Amount","Date","Status"],
-                    ...filtered.map((o) => [o.id,o.customerName,o.customerEmail,o.product,o.category,String(o.quantity),String(o.amount),o.date,o.status]),
+                    ["Order ID","Customer","Email","Items","Total Qty","Total Amount","Date","Status"],
+                    ...filtered.map((o) => {
+                      const itemNames = o.items ? o.items.map(i => i.product).join('; ') : o.product;
+                      const totalQty = o.items ? o.items.reduce((sum, i) => sum + i.quantity, 0) : o.quantity;
+                      const totalAmt = o.totalAmount || o.amount;
+                      return [o.id, o.customerName, o.customerEmail, itemNames, String(totalQty), String(totalAmt), o.date, o.status];
+                    }),
                   ];
                   const csv = rows.map((r) => r.join(",")).join("\n");
                   const blob = new Blob([csv], { type: "text/csv" });
@@ -254,42 +272,70 @@ const AdminDashboard = () => {
                         <p className="text-xs text-muted-foreground">{order.customerEmail}</p>
                       </td>
                       <td className="px-6 py-4 max-w-[220px]">
-                        <p className="font-medium text-foreground truncate" title={order.product}>{order.product}</p>
-                        <p className="text-xs text-muted-foreground">{order.category}</p>
+                        {order.items ? (
+                          <>
+                            <p className="font-medium text-foreground truncate" title={order.items.map(i => i.product).join(", ")}>
+                              {order.items.length === 1 ? order.items[0].product : `Multiple Items (${order.items.length})`}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {order.items.length === 1 ? order.items[0].category : "Mixed Categories"}
+                            </p>
+                          </>
+                        ) : (
+                          <>
+                            <p className="font-medium text-foreground truncate" title={order.product}>{order.product}</p>
+                            <p className="text-xs text-muted-foreground">{order.category}</p>
+                          </>
+                        )}
                       </td>
-                      <td className="px-6 py-4 text-foreground font-medium">{order.quantity}</td>
-                      <td className="px-6 py-4 text-foreground font-semibold">₹{order.amount.toLocaleString("en-IN")}</td>
+                      <td className="px-6 py-4 text-foreground font-medium">
+                        {order.items ? order.items.reduce((sum, i) => sum + i.quantity, 0) : order.quantity}
+                      </td>
+                      <td className="px-6 py-4 text-foreground font-semibold">
+                        ₹{(order.totalAmount || order.amount || 0).toLocaleString("en-IN")}
+                      </td>
                       <td className="px-6 py-4 text-muted-foreground whitespace-nowrap">{order.date}</td>
                       <td className="px-6 py-4">
                         <StatusBadge status={order.status} />
                       </td>
                       <td className="px-6 py-4 text-right relative">
-                        <button
-                          onClick={() => setOpenMenu(openMenu === order.id ? null : order.id)}
-                          className="p-1.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-muted transition-colors"
-                        >
-                          <MoreHorizontal className="w-4 h-4" />
-                        </button>
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => setViewOrder(order)}
+                            title="View Details"
+                            className="p-1.5 rounded-lg text-muted-foreground hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                          <div className="relative">
+                            <button
+                              onClick={() => setOpenMenu(openMenu === order.id ? null : order.id)}
+                              className="p-1.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-muted transition-colors"
+                            >
+                              <MoreHorizontal className="w-4 h-4" />
+                            </button>
 
-                        {openMenu === order.id && (
-                          <div className="absolute right-6 top-full mt-1 bg-background border border-border rounded-lg shadow-xl z-50 py-1 w-44 text-left">
-                            <p className="px-3 py-1.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider border-b border-border mb-1">
-                              Change Status
-                            </p>
-                            {(["PENDING", "CONFIRMED", "CANCELLED"] as Status[]).map((s) => (
-                              <button
-                                key={s}
-                                disabled={order.status === s}
-                                onClick={() => updateStatus(order.id, s)}
-                                className="w-full text-left px-3 py-2 text-sm hover:bg-muted text-foreground disabled:text-muted-foreground disabled:cursor-not-allowed transition-colors"
-                              >
-                                {s === "CONFIRMED" && <span className="text-emerald-600 font-medium">✓ Confirm</span>}
-                                {s === "PENDING"   && <span className="text-amber-600 font-medium">⏳ Mark Pending</span>}
-                                {s === "CANCELLED" && <span className="text-red-500 font-medium">✕ Cancel</span>}
-                              </button>
-                            ))}
+                            {openMenu === order.id && (
+                              <div className="absolute right-0 top-full mt-1 bg-background border border-border rounded-lg shadow-xl z-50 py-1 w-44 text-left">
+                                <p className="px-3 py-1.5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider border-b border-border mb-1">
+                                  Change Status
+                                </p>
+                                {(["PENDING", "CONFIRMED", "CANCELLED"] as Status[]).map((s) => (
+                                  <button
+                                    key={s}
+                                    disabled={order.status === s}
+                                    onClick={() => updateStatus(order.id, s)}
+                                    className="w-full text-left px-3 py-2 text-sm hover:bg-muted text-foreground disabled:text-muted-foreground disabled:cursor-not-allowed transition-colors"
+                                  >
+                                    {s === "CONFIRMED" && <span className="text-emerald-600 font-medium">✓ Confirm</span>}
+                                    {s === "PENDING"   && <span className="text-amber-600 font-medium">⏳ Mark Pending</span>}
+                                    {s === "CANCELLED" && <span className="text-red-500 font-medium">✕ Cancel</span>}
+                                  </button>
+                                ))}
+                              </div>
+                            )}
                           </div>
-                        )}
+                        </div>
                       </td>
                     </tr>
                   ))
@@ -308,6 +354,92 @@ const AdminDashboard = () => {
           </div>
         </div>
       </div>
+
+      {/* View Order Modal */}
+      {viewOrder && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-background border border-border rounded-2xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-border">
+              <h3 className="font-heading font-bold text-lg text-foreground">Order Details</h3>
+              <button
+                onClick={() => setViewOrder(null)}
+                className="p-1.5 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <div className="p-6 overflow-y-auto space-y-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground mb-1">Order ID</p>
+                  <p className="font-mono font-bold text-primary">{viewOrder.id}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm text-muted-foreground mb-1">Date Placed</p>
+                  <p className="font-medium text-foreground">{viewOrder.date}</p>
+                </div>
+              </div>
+
+              <div className="bg-muted/20 border border-border rounded-xl p-4 space-y-3">
+                <h4 className="text-xs font-bold text-primary uppercase tracking-wider border-b border-border pb-2">Customer Info</h4>
+                <div>
+                  <p className="font-semibold text-foreground text-lg">{viewOrder.customerName}</p>
+                  <p className="text-sm text-muted-foreground">{viewOrder.customerEmail}</p>
+                </div>
+              </div>
+
+              <div className="bg-muted/20 border border-border rounded-xl p-4 space-y-4">
+                <h4 className="text-xs font-bold text-primary uppercase tracking-wider border-b border-border pb-2">Order Items</h4>
+                
+                <div className="space-y-4">
+                  {viewOrder.items ? (
+                    viewOrder.items.map((item, idx) => (
+                      <div key={idx} className="flex items-start justify-between gap-4">
+                        <div>
+                          <p className="font-semibold text-foreground">{item.product}</p>
+                          <p className="text-sm text-muted-foreground mt-0.5">{item.category}</p>
+                        </div>
+                        <div className="text-right whitespace-nowrap">
+                          <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
+                          <p className="font-bold text-foreground mt-1">₹{item.amount.toLocaleString("en-IN")}</p>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <p className="font-semibold text-foreground">{viewOrder.product}</p>
+                        <p className="text-sm text-muted-foreground mt-0.5">{viewOrder.category}</p>
+                      </div>
+                      <div className="text-right whitespace-nowrap">
+                        <p className="text-sm text-muted-foreground">Qty: {viewOrder.quantity}</p>
+                        <p className="font-bold text-foreground mt-1">₹{(viewOrder.amount || 0).toLocaleString("en-IN")}</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="pt-4 border-t border-border flex justify-between items-center">
+                  <span className="font-bold text-muted-foreground uppercase text-xs tracking-wider">Total</span>
+                  <span className="font-bold text-primary text-xl">₹{(viewOrder.totalAmount || viewOrder.amount || 0).toLocaleString("en-IN")}</span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between pt-2">
+                <p className="text-sm font-medium text-muted-foreground">Current Status</p>
+                <StatusBadge status={viewOrder.status} />
+              </div>
+            </div>
+            
+            <div className="px-6 py-4 border-t border-border bg-muted/10 text-right">
+              <Button onClick={() => setViewOrder(null)} variant="outline" className="px-8 border-border">
+                Close
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
