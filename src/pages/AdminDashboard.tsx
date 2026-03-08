@@ -15,6 +15,7 @@ import {
   IndianRupee,
   Eye,
   X,
+  Mail,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -31,7 +32,8 @@ interface OrderItem {
 interface Order {
   id: string;
   customerName: string;
-  customerEmail: string;
+  customerEmail?: string;
+  companyAddress?: string;
   items?: OrderItem[]; // Optional for backwards compatibility with old placed orders
   product?: string;     // Old format
   category?: string;    // Old format
@@ -214,12 +216,12 @@ const AdminDashboard = () => {
                 className="ml-2 p-2 rounded-lg border border-border text-muted-foreground hover:text-primary hover:border-primary transition-colors"
                 onClick={() => {
                   const rows = [
-                    ["Order ID","Customer","Email","Items","Total Qty","Total Amount","Date","Status"],
+                    ["Order ID","Customer","Email","Company Address","Items","Total Qty","Total Amount","Date","Status"],
                     ...filtered.map((o) => {
                       const itemNames = o.items ? o.items.map(i => i.product).join('; ') : o.product;
                       const totalQty = o.items ? o.items.reduce((sum, i) => sum + i.quantity, 0) : o.quantity;
                       const totalAmt = o.totalAmount || o.amount;
-                      return [o.id, o.customerName, o.customerEmail, itemNames, String(totalQty), String(totalAmt), o.date, o.status];
+                      return [o.id, o.customerName, o.customerEmail || "N/A", `"${o.companyAddress || "Online Order"}"`, itemNames, String(totalQty), String(totalAmt), o.date, o.status];
                     }),
                   ];
                   const csv = rows.map((r) => r.join(",")).join("\n");
@@ -269,7 +271,16 @@ const AdminDashboard = () => {
                       </td>
                       <td className="px-6 py-4">
                         <p className="font-semibold text-foreground">{order.customerName}</p>
-                        <p className="text-xs text-muted-foreground">{order.customerEmail}</p>
+                        {order.companyAddress && (
+                          <p className="text-xs text-muted-foreground mt-0.5 max-w-[180px] truncate" title={order.companyAddress}>
+                            📍 {order.companyAddress}
+                          </p>
+                        )}
+                        {order.customerEmail && (
+                          <p className="text-xs text-muted-foreground mt-0.5 truncate max-w-[180px]" title={order.customerEmail}>
+                            ✉️ {order.customerEmail}
+                          </p>
+                        )}
                       </td>
                       <td className="px-6 py-4 max-w-[220px]">
                         {order.items ? (
@@ -385,7 +396,19 @@ const AdminDashboard = () => {
                 <h4 className="text-xs font-bold text-primary uppercase tracking-wider border-b border-border pb-2">Customer Info</h4>
                 <div>
                   <p className="font-semibold text-foreground text-lg">{viewOrder.customerName}</p>
-                  <p className="text-sm text-muted-foreground">{viewOrder.customerEmail}</p>
+                  
+                  {viewOrder.companyAddress && (
+                    <p className="text-sm text-muted-foreground mt-1 bg-background inline-block px-2 py-1 rounded border border-border">
+                      <span className="font-medium">Company Address:</span> {viewOrder.companyAddress}
+                    </p>
+                  )}
+                  
+                  {viewOrder.customerEmail && (
+                    <p className="text-sm text-primary mt-1 flex items-center gap-1">
+                      <Mail className="w-3 h-3" />
+                      {viewOrder.customerEmail}
+                    </p>
+                  )}
                 </div>
               </div>
 

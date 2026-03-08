@@ -1,10 +1,13 @@
 import { useCart } from "@/contexts/CartContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Trash2, ArrowLeft } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Cart = () => {
   const { cartItems, removeFromCart } = useCart();
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   const calculateTotal = () => {
     return cartItems.reduce(
@@ -91,11 +94,20 @@ const Cart = () => {
                   ₹{calculateTotal()}
                 </p>
               </div>
-              <Link to="/checkout" className="w-full sm:w-auto mt-6 sm:mt-0">
-                <Button className="w-full bg-primary hover:bg-primary-hover text-white text-lg px-8 py-6 h-auto tracking-wide uppercase">
+              <div className="w-full sm:w-auto mt-6 sm:mt-0">
+                <Button 
+                  onClick={() => {
+                    if (user) {
+                      navigate("/checkout");
+                    } else {
+                      navigate("/login?redirect=/checkout");
+                    }
+                  }}
+                  className="w-full bg-primary hover:bg-primary-hover text-white text-lg px-8 py-6 h-auto tracking-wide uppercase"
+                >
                   Proceed to Checkout
                 </Button>
-              </Link>
+              </div>
             </div>
           </div>
         )}

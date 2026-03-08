@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useCart } from "@/contexts/CartContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { Printer, ArrowLeft, Share2, ShoppingBag, CheckCircle2 } from "lucide-react";
@@ -7,6 +8,7 @@ import html2canvas from "html2canvas";
 
 const Checkout = () => {
   const { cartItems, clearCart } = useCart();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [placedInvoice, setPlacedInvoice] = useState("");
@@ -37,8 +39,9 @@ const Checkout = () => {
     // Group all cart items into a single order
     const newOrder = {
       id: invoiceNumber,
-      customerName: "Web Customer",
-      customerEmail: "web@order.com",
+      customerName: user?.name || "Web Customer",
+      customerEmail: user?.email || "guest@order.com",
+      companyAddress: user?.companyAddress || "Online Order",
       items: cartItems.map((item) => ({
         product: item.name,
         category: item.name.toLowerCase().includes("powder") ? "Detergent Powder" : "Detergent Cake",
