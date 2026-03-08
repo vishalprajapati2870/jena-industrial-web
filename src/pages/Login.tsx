@@ -10,6 +10,7 @@ import { toast } from "sonner";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
   const [companyAddress, setCompanyAddress] = useState("");
   const [otp, setOtp] = useState("");
   const [step, setStep] = useState<"EMAIL" | "OTP">("EMAIL");
@@ -81,7 +82,7 @@ const Login = () => {
       const data = await response.json();
       
       if (data.success) {
-        login(email, name, companyAddress);
+        login(email, name, companyAddress, phone);
         toast.success("Successfully logged in!");
         navigate(redirectParams);
       } else {
@@ -98,22 +99,22 @@ const Login = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
       <div className="max-w-md w-full bg-card rounded-2xl shadow-xl overflow-hidden border border-border">
-        <div className="bg-primary/5 p-8 text-center border-b border-border">
-          <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+        <div className="bg-primary/5 p-6 text-center border-b border-border">
+          <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
             <Mail className="w-8 h-8 text-primary" />
           </div>
           <h1 className="text-2xl font-bold text-heading">Sign In with Email</h1>
-          <p className="text-muted-foreground mt-2">
+          <p className="text-muted-foreground mt-2 text-sm">
             Secure and passwordless login to your account using Email OTP.
           </p>
         </div>
 
-        <div className="p-8">
+        <div className="p-6">
           {step === "EMAIL" ? (
-            <form onSubmit={handleSendOtp} className="space-y-6">
+            <form onSubmit={handleSendOtp} className="space-y-4">
               
               {/* Name */}
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <Label htmlFor="name">Full Name</Label>
                 <Input
                   id="name"
@@ -126,7 +127,7 @@ const Login = () => {
               </div>
 
               {/* Company Address */}
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <Label htmlFor="companyAddress">Company Address</Label>
                 <Input
                   id="companyAddress"
@@ -138,8 +139,20 @@ const Login = () => {
                 />
               </div>
 
+              {/* Phone */}
+              <div className="space-y-1.5">
+                <Label htmlFor="phone">Phone Number (Optional)</Label>
+                <Input
+                  id="phone"
+                  type="tel"
+                  placeholder="Enter your phone number"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                />
+              </div>
+
               {/* Email */}
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <Label htmlFor="email">Email Address</Label>
                 <div className="relative">
                   <Input
@@ -169,8 +182,8 @@ const Login = () => {
               </Button>
             </form>
           ) : (
-            <form onSubmit={handleVerifyOtp} className="space-y-6">
-              <div className="bg-muted p-4 rounded-lg flex items-center justify-between mb-6">
+            <form onSubmit={handleVerifyOtp} className="space-y-4">
+              <div className="bg-muted p-4 rounded-lg flex items-center justify-between mb-4">
                 <div className="truncate pr-4 w-full">
                   <p className="text-sm text-muted-foreground">Sent to</p>
                   <p className="font-medium truncate">{email}</p>
@@ -187,7 +200,7 @@ const Login = () => {
               </div>
 
               {testEmailUrl && (
-                <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg mb-6">
+                <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg mb-4">
                   <p className="text-sm text-blue-800 mb-2 font-medium">Test Mode Active</p>
                   <p className="text-xs text-blue-600 mb-3">
                     A test email was sent using Ethereal. Click below to view the actual email and get your OTP.
@@ -204,7 +217,7 @@ const Login = () => {
                 </div>
               )}
 
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <Label htmlFor="otp">Enter Verification Code</Label>
                 <Input
                   id="otp"

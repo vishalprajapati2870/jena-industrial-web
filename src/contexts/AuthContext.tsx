@@ -4,11 +4,12 @@ interface User {
   email: string;
   name: string;
   companyAddress: string;
+  phone?: string;
 }
 
 interface AuthContextType {
   user: User | null;
-  login: (email: string, name: string, companyAddress: string) => void;
+  login: (email: string, name: string, companyAddress: string, phone?: string) => void;
   logout: () => void;
 }
 
@@ -29,8 +30,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, []);
 
-  const login = (email: string, name: string, companyAddress: string) => {
-    const newUser = { email, name, companyAddress };
+  const login = (email: string, name: string, companyAddress: string, phone?: string) => {
+    const newUser = { email, name, companyAddress, phone };
     setUser(newUser);
     localStorage.setItem("customerUser", JSON.stringify(newUser));
   };

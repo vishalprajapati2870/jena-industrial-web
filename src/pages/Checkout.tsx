@@ -21,6 +21,11 @@ const Checkout = () => {
     return saved ? JSON.parse(saved) : null;
   });
 
+  const [showNewForm, setShowNewForm] = useState<boolean>(() => {
+    const saved = localStorage.getItem("nsf_last_billing_details");
+    return !saved;
+  });
+
   const [formData, setFormData] = useState({
     name: user?.name || "",
     email: user?.email || "",
@@ -33,6 +38,22 @@ const Checkout = () => {
   const handleUsePrevious = () => {
     setConfirmedDetails(previousDetails);
     setCheckoutStep("invoice");
+  };
+
+  const handleEnterNewDetails = () => {
+    setFormData({ name: "", email: "", phone: "", companyAddress: "" });
+    setShowNewForm(true);
+  };
+
+  const handleCancelNewDetails = () => {
+    // If they cancel, restore the prepopulation from context + previous details just in case
+    setFormData({
+      name: user?.name || "",
+      email: user?.email || "",
+      phone: previousDetails?.phone || "",
+      companyAddress: user?.companyAddress || "",
+    });
+    setShowNewForm(false);
   };
 
   const handleDetailsSubmit = (e: React.FormEvent) => {
@@ -187,39 +208,56 @@ const Checkout = () => {
           
           <h1 className="text-3xl font-heading font-bold text-heading mb-6">Billing & Shipping Details</h1>
 
-          {previousDetails && (
-            <div className="bg-card border border-border rounded-xl p-6 mb-8 shadow-sm">
-              <h2 className="text-lg font-semibold mb-4 text-heading">Use Previous Details</h2>
-              <div className="space-y-2 mb-6 text-foreground">
+          {previousDetails && !showNewForm && (
+            <div className="bg-card border border-border rounded-xl p-5 mb-6 shadow-sm">
+              <h2 className="text-lg font-semibold mb-3 text-heading">Use Previous Details</h2>
+              <div className="space-y-1.5 mb-5 text-foreground text-sm">
                 <p><span className="font-medium text-muted-foreground">Name:</span> {previousDetails.name}</p>
                 <p><span className="font-medium text-muted-foreground">Email:</span> {previousDetails.email}</p>
                 {previousDetails.phone && <p><span className="font-medium text-muted-foreground">Phone:</span> {previousDetails.phone}</p>}
                 <p><span className="font-medium text-muted-foreground">Company Address:</span> {previousDetails.companyAddress}</p>
               </div>
-              <Button onClick={handleUsePrevious} className="w-full h-12 text-base font-bold bg-primary hover:bg-primary/90 text-white">
-                Continue with these details
-              </Button>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Button type="button" onClick={handleUsePrevious} className="flex-1 h-12 text-base font-bold bg-primary hover:bg-primary/90 text-white">
+                  Continue with these details
+                </Button>
+                <Button type="button" onClick={handleEnterNewDetails} variant="outline" className="flex-1 h-12 text-base font-bold text-primary border-primary hover:bg-primary/10">
+                  Enter New Details
+                </Button>
+              </div>
             </div>
           )}
 
-          <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
-            <h2 className="text-lg font-semibold mb-4 text-heading">
-              {previousDetails ? "Or Enter New Details" : "Enter Details"}
-            </h2>
-            <form onSubmit={handleDetailsSubmit} className="space-y-4">
-              <div className="space-y-2">
+          {showNewForm && (
+            <div className="bg-card border border-border rounded-xl p-5 shadow-sm">
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-lg font-semibold text-heading">
+                  Enter Details
+                </h2>
+                {previousDetails && (
+                  <button
+                    type="button"
+                    onClick={handleCancelNewDetails}
+                    className="text-sm font-medium text-primary hover:text-primary-hover underline"
+                  >
+                    Cancel
+                  </button>
+                )}
+              </div>
+            <form onSubmit={handleDetailsSubmit} className="space-y-3">
+              <div className="space-y-1.5">
                 <Label htmlFor="name">Full Name</Label>
                 <Input id="name" required value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} placeholder="E.g. John Doe" />
               </div>
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <Label htmlFor="email">Email Address</Label>
                 <Input id="email" type="email" required value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} placeholder="E.g. john@company.com" />
               </div>
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <Label htmlFor="phone">Phone Number (Optional)</Label>
                 <Input id="phone" type="tel" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} placeholder="E.g. +91 9876543210" />
               </div>
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <Label htmlFor="address">Company Address</Label>
                 <Input id="address" required value={formData.companyAddress} onChange={(e) => setFormData({...formData, companyAddress: e.target.value})} placeholder="Full shipping address" />
               </div>
@@ -228,6 +266,7 @@ const Checkout = () => {
               </Button>
             </form>
           </div>
+          )}
 
         </div>
       </div>
