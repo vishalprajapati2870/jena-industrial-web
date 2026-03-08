@@ -174,13 +174,15 @@ const AdminDashboard = () => {
           <StatCard label="Pending"         value={pending}   icon={<Clock className="w-5 h-5" />}         color="text-amber-600"   bg="bg-amber-50" />
           <StatCard label="Confirmed"       value={confirmed} icon={<CheckCircle2 className="w-5 h-5" />}  color="text-emerald-600" bg="bg-emerald-50" />
           <StatCard label="Cancelled"       value={cancelled} icon={<XCircle className="w-5 h-5" />}       color="text-red-500"     bg="bg-red-50" />
-          <div className="col-span-2 lg:col-span-4 xl:col-span-1 bg-primary rounded-xl p-5 flex items-center gap-4 shadow-sm">
-            <div className="bg-white/20 rounded-xl p-3">
+          <div className="col-span-2 lg:col-span-4 xl:col-span-1 bg-primary rounded-xl p-5 flex items-center gap-4 shadow-sm min-w-0">
+            <div className="bg-white/20 rounded-xl p-3 shrink-0">
               <IndianRupee className="w-5 h-5 text-white" />
             </div>
-            <div>
+            <div className="min-w-0 flex-1">
               <p className="text-xs text-white/70 uppercase tracking-wide font-medium">Revenue</p>
-              <p className="text-2xl font-bold text-white mt-0.5">₹{revenue.toLocaleString("en-IN")}</p>
+              <p className="text-2xl font-bold text-white mt-0.5" title={`₹${revenue.toLocaleString("en-IN", { minimumFractionDigits: 2 })}`}>
+                {new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', notation: 'compact', maximumFractionDigits: 2 }).format(revenue)}
+              </p>
             </div>
           </div>
         </div>
