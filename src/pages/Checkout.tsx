@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Link, useNavigate } from "react-router-dom";
 import { Printer, ArrowLeft, Share2, ShoppingBag, CheckCircle2 } from "lucide-react";
 import html2canvas from "html2canvas";
@@ -12,6 +14,34 @@ const Checkout = () => {
   const navigate = useNavigate();
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [placedInvoice, setPlacedInvoice] = useState("");
+  const [checkoutStep, setCheckoutStep] = useState<"details" | "invoice">("details");
+
+  const [previousDetails, setPreviousDetails] = useState<any>(() => {
+    const saved = localStorage.getItem("nsf_last_billing_details");
+    return saved ? JSON.parse(saved) : null;
+  });
+
+  const [formData, setFormData] = useState({
+    name: user?.name || "",
+    email: user?.email || "",
+    phone: previousDetails?.phone || "",
+    companyAddress: user?.companyAddress || "",
+  });
+  
+  const [confirmedDetails, setConfirmedDetails] = useState<any>(null);
+
+  const handleUsePrevious = () => {
+    setConfirmedDetails(previousDetails);
+    setCheckoutStep("invoice");
+  };
+
+  const handleDetailsSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    localStorage.setItem("nsf_last_billing_details", JSON.stringify(formData));
+    setPreviousDetails(formData);
+    setConfirmedDetails(formData);
+    setCheckoutStep("invoice");
+  };
 
   const calculateSubtotal = () => {
     return cartItems.reduce(
@@ -39,9 +69,9 @@ const Checkout = () => {
     // Group all cart items into a single order
     const newOrder = {
       id: invoiceNumber,
-      customerName: user?.name || "Web Customer",
-      customerEmail: user?.email || "guest@order.com",
-      companyAddress: user?.companyAddress || "Online Order",
+      customerName: confirmedDetails?.name || "Web Customer",
+      customerEmail: confirmedDetails?.email || "guest@order.com",
+      companyAddress: confirmedDetails?.companyAddress || "Online Order",
       items: cartItems.map((item) => ({
         product: item.name,
         category: item.name.toLowerCase().includes("powder") ? "Detergent Powder" : "Detergent Cake",
@@ -143,6 +173,67 @@ const Checkout = () => {
     }
   };
 
+  if (checkoutStep === "details") {
+    return (
+      <div className="min-h-screen bg-background py-10">
+        <div className="max-w-xl mx-auto px-4">
+          <button
+            onClick={() => navigate("/cart")}
+            className="flex items-center gap-2 text-primary hover:text-primary-hover font-medium transition-colors mb-6"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to Cart
+          </button>
+          
+          <h1 className="text-3xl font-heading font-bold text-heading mb-6">Billing & Shipping Details</h1>
+
+          {previousDetails && (
+            <div className="bg-card border border-border rounded-xl p-6 mb-8 shadow-sm">
+              <h2 className="text-lg font-semibold mb-4 text-heading">Use Previous Details</h2>
+              <div className="space-y-2 mb-6 text-foreground">
+                <p><span className="font-medium text-muted-foreground">Name:</span> {previousDetails.name}</p>
+                <p><span className="font-medium text-muted-foreground">Email:</span> {previousDetails.email}</p>
+                {previousDetails.phone && <p><span className="font-medium text-muted-foreground">Phone:</span> {previousDetails.phone}</p>}
+                <p><span className="font-medium text-muted-foreground">Company Address:</span> {previousDetails.companyAddress}</p>
+              </div>
+              <Button onClick={handleUsePrevious} className="w-full h-12 text-base font-bold bg-primary hover:bg-primary/90 text-white">
+                Continue with these details
+              </Button>
+            </div>
+          )}
+
+          <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
+            <h2 className="text-lg font-semibold mb-4 text-heading">
+              {previousDetails ? "Or Enter New Details" : "Enter Details"}
+            </h2>
+            <form onSubmit={handleDetailsSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Full Name</Label>
+                <Input id="name" required value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} placeholder="E.g. John Doe" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="email">Email Address</Label>
+                <Input id="email" type="email" required value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} placeholder="E.g. john@company.com" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="phone">Phone Number (Optional)</Label>
+                <Input id="phone" type="tel" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} placeholder="E.g. +91 9876543210" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="address">Company Address</Label>
+                <Input id="address" required value={formData.companyAddress} onChange={(e) => setFormData({...formData, companyAddress: e.target.value})} placeholder="Full shipping address" />
+              </div>
+              <Button type="submit" className="w-full h-12 text-base font-bold bg-primary hover:bg-primary/90 text-white mt-4">
+                Continue to Invoice
+              </Button>
+            </form>
+          </div>
+
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background py-10 print:py-0 print:bg-white">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -150,11 +241,11 @@ const Checkout = () => {
         {/* Screen Only Actions */}
         <div className="flex items-center justify-between mb-6 print:hidden">
           <button
-            onClick={() => navigate("/cart")}
+            onClick={() => setCheckoutStep("details")}
             className="flex items-center gap-2 text-primary hover:text-primary-hover font-medium transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            Back to Cart
+            Back to Details
           </button>
 
           <div className="flex gap-3">
