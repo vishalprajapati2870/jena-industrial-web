@@ -16,6 +16,8 @@ import {
   Eye,
   X,
   Mail,
+  Receipt,
+  Printer,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -39,6 +41,9 @@ interface Order {
   category?: string;    // Old format
   quantity?: number;    // Old format
   amount?: number;      // Old format
+  subtotal?: number;    // New format
+  gstRate?: number;     // New format
+  gstAmount?: number;   // New format
   totalAmount?: number; // New format
   date: string;
   status: Status;
@@ -368,97 +373,182 @@ const AdminDashboard = () => {
 
       {/* View Order Modal */}
       {viewOrder && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-background border border-border rounded-2xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-border">
-              <h3 className="font-heading font-bold text-lg text-foreground">Order Details</h3>
-              <button
-                onClick={() => setViewOrder(null)}
-                className="p-1.5 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm print:p-0 print:bg-white">
+          <div className="bg-background border border-border sm:rounded-2xl shadow-xl w-full max-w-3xl overflow-hidden flex flex-col max-h-[90vh] print:max-h-[none] print:border-none print:shadow-none animate-in fade-in zoom-in-95 duration-200">
+            
+            {/* Modal Header containing Actions (Hidden when printing) */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-muted/10 print:hidden">
+              <h3 className="font-heading font-bold text-lg text-foreground flex items-center gap-2">
+                <Receipt className="w-5 h-5 text-primary" />
+                Invoice Details
+              </h3>
+              <div className="flex items-center gap-2">
+                <Button
+                  onClick={() => window.print()}
+                  variant="outline"
+                  size="sm"
+                  className="flex items-center gap-2 h-9"
+                >
+                  <Printer className="w-4 h-4" />
+                  Print
+                </Button>
+                <button
+                  onClick={() => setViewOrder(null)}
+                  className="p-1.5 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors ml-2"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
             </div>
             
-            <div className="p-6 overflow-y-auto space-y-6">
-              <div className="flex items-center justify-between">
+            {/* Invoice Content */}
+            <div className="p-8 overflow-y-auto bg-white text-black print:overflow-visible">
+              
+              {/* Invoice Header */}
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 pb-6 border-b border-gray-200">
                 <div>
-                  <p className="text-sm text-muted-foreground mb-1">Order ID</p>
-                  <p className="font-mono font-bold text-primary">{viewOrder.id}</p>
+                  <h1 className="text-3xl font-heading font-bold text-[#0f766e] mb-1">Naval Soap Factory</h1>
+                  <p className="text-gray-600 text-sm font-medium">Silver Detergent Private Limited</p>
+                  <div className="text-gray-500 text-sm mt-2 space-y-0.5">
+                    <p>6/D/1, Anand Industrial Estate, Borsad Road,</p>
+                    <p>ANAND - 388 001. (Guj.)</p>
+                    <p className="mt-2 flex items-center gap-1"><span className="font-medium text-gray-600">Ph:</span> +91 98258 21075, +91 98258 05478</p>
+                    <p className="flex items-center gap-1 font-mono text-xs mt-1"><span className="font-medium text-gray-600 font-sans text-sm">GSTIN:</span> 24XXXXX1234X1Z5</p>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <p className="text-sm text-muted-foreground mb-1">Date Placed</p>
-                  <p className="font-medium text-foreground">{viewOrder.date}</p>
+                <div className="mt-8 md:mt-0 text-left md:text-right">
+                  <h2 className="text-3xl font-bold text-gray-800 tracking-tight mb-2">INVOICE</h2>
+                  <div className="space-y-1">
+                    <p className="text-gray-500 text-sm">Invoice No: <span className="text-gray-900 font-mono font-medium ml-1">{viewOrder.id}</span></p>
+                    <p className="text-gray-500 text-sm">Date: <span className="text-gray-900 font-medium ml-1">{viewOrder.date}</span></p>
+                    <div className="flex items-center md:justify-end gap-2 mt-2 pt-2 border-t border-gray-100">
+                      <span className="text-gray-500 text-sm">Status:</span>
+                      <StatusBadge status={viewOrder.status} />
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <div className="bg-muted/20 border border-border rounded-xl p-4 space-y-3">
-                <h4 className="text-xs font-bold text-primary uppercase tracking-wider border-b border-border pb-2">Customer Info</h4>
-                <div>
-                  <p className="font-semibold text-foreground text-lg">{viewOrder.customerName}</p>
+              {/* Billing Info */}
+              <div className="flex flex-col sm:flex-row gap-8 mb-10">
+                <div className="flex-1 bg-gray-50 p-5 rounded-xl border border-gray-100">
+                  <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Billed To</h4>
+                  <p className="font-bold text-gray-900 text-lg mb-1">{viewOrder.customerName}</p>
                   
-                  {viewOrder.companyAddress && (
-                    <p className="text-sm text-muted-foreground mt-1 bg-background inline-block px-2 py-1 rounded border border-border">
-                      <span className="font-medium">Company Address:</span> {viewOrder.companyAddress}
+                  {viewOrder.companyAddress ? (
+                    <p className="text-gray-600 flex items-start gap-2 text-sm max-w-[250px] leading-relaxed">
+                      <span className="mt-0.5 line-clamp-3">{viewOrder.companyAddress}</span>
                     </p>
+                  ) : (
+                    <p className="text-gray-500 italic text-sm">No address provided</p>
                   )}
                   
                   {viewOrder.customerEmail && (
-                    <p className="text-sm text-primary mt-1 flex items-center gap-1">
-                      <Mail className="w-3 h-3" />
-                      {viewOrder.customerEmail}
+                    <p className="text-[#0f766e] mt-3 flex items-center gap-1.5 text-sm font-medium">
+                      <Mail className="w-4 h-4" />
+                      <a href={`mailto:${viewOrder.customerEmail}`} className="hover:underline">{viewOrder.customerEmail}</a>
                     </p>
                   )}
                 </div>
+                {/* Space for shipping/other info if needed later */}
+                <div className="flex-1 hidden sm:block"></div>
               </div>
 
-              <div className="bg-muted/20 border border-border rounded-xl p-4 space-y-4">
-                <h4 className="text-xs font-bold text-primary uppercase tracking-wider border-b border-border pb-2">Order Items</h4>
-                
-                <div className="space-y-4">
-                  {viewOrder.items ? (
-                    viewOrder.items.map((item, idx) => (
-                      <div key={idx} className="flex items-start justify-between gap-4">
-                        <div>
-                          <p className="font-semibold text-foreground">{item.product}</p>
-                          <p className="text-sm text-muted-foreground mt-0.5">{item.category}</p>
-                        </div>
-                        <div className="text-right whitespace-nowrap">
-                          <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
-                          <p className="font-bold text-foreground mt-1">₹{item.amount.toLocaleString("en-IN")}</p>
-                        </div>
+              {/* Order Items Table */}
+              <div className="mb-10 rounded-xl overflow-hidden border border-gray-200">
+                <table className="w-full text-left border-collapse">
+                  <thead className="bg-gray-50 border-b border-gray-200">
+                    <tr className="text-gray-500 text-xs uppercase tracking-wider font-semibold">
+                      <th className="py-4 px-5">Item Description</th>
+                      <th className="py-4 px-5 text-center">HSN/SAC</th>
+                      <th className="py-4 px-5 text-center">Qty</th>
+                      <th className="py-4 px-5 text-right">Unit Rate</th>
+                      <th className="py-4 px-5 text-right">Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {viewOrder.items ? (
+                      viewOrder.items.map((item, idx) => (
+                        <tr key={idx} className="group hover:bg-gray-50/50 transition-colors">
+                          <td className="py-4 px-5">
+                            <p className="font-semibold text-gray-900">{item.product}</p>
+                            <p className="text-xs text-gray-500 mt-0.5">{item.category}</p>
+                          </td>
+                          <td className="py-4 px-5 text-center text-xs text-gray-600 font-mono">
+                            3401
+                          </td>
+                          <td className="py-4 px-5 text-center font-medium text-gray-700">{item.quantity}</td>
+                          <td className="py-4 px-5 text-right text-gray-600">₹{(item.amount / item.quantity).toLocaleString("en-IN", { minimumFractionDigits: 2 })}</td>
+                          <td className="py-4 px-5 text-right font-bold text-gray-900">₹{item.amount.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td className="py-4 px-5">
+                          <p className="font-semibold text-gray-900">{viewOrder.product}</p>
+                          <p className="text-xs text-gray-500 mt-0.5">{viewOrder.category}</p>
+                        </td>
+                        <td className="py-4 px-5 text-center text-xs text-gray-600 font-mono">
+                          3401
+                        </td>
+                        <td className="py-4 px-5 text-center font-medium text-gray-700">{viewOrder.quantity}</td>
+                        <td className="py-4 px-5 text-right text-gray-600">₹{((viewOrder.amount || 0) / (viewOrder.quantity || 1)).toLocaleString("en-IN", { minimumFractionDigits: 2 })}</td>
+                        <td className="py-4 px-5 text-right font-bold text-gray-900">₹{(viewOrder.amount || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })}</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Totals Section */}
+              <div className="flex justify-end pt-2">
+                <div className="w-full sm:w-1/2 md:w-5/12 bg-gray-50 p-6 rounded-xl border border-gray-100">
+                  
+                  {viewOrder.subtotal !== undefined ? (
+                    <>
+                      <div className="flex justify-between text-gray-600 mb-2 text-sm">
+                        <span>Subtotal</span>
+                        <span className="font-medium text-gray-900">₹{viewOrder.subtotal.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</span>
                       </div>
-                    ))
+                      <div className="flex justify-between text-gray-600 mb-2 text-sm">
+                        <span>CGST (9%)</span>
+                        <span className="font-medium text-gray-900">₹{(viewOrder.gstAmount! / 2).toLocaleString("en-IN", { minimumFractionDigits: 2 })}</span>
+                      </div>
+                      <div className="flex justify-between text-gray-600 mb-4 text-sm">
+                        <span>SGST (9%)</span>
+                        <span className="font-medium text-gray-900">₹{(viewOrder.gstAmount! / 2).toLocaleString("en-IN", { minimumFractionDigits: 2 })}</span>
+                      </div>
+                    </>
                   ) : (
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <p className="font-semibold text-foreground">{viewOrder.product}</p>
-                        <p className="text-sm text-muted-foreground mt-0.5">{viewOrder.category}</p>
-                      </div>
-                      <div className="text-right whitespace-nowrap">
-                        <p className="text-sm text-muted-foreground">Qty: {viewOrder.quantity}</p>
-                        <p className="font-bold text-foreground mt-1">₹{(viewOrder.amount || 0).toLocaleString("en-IN")}</p>
-                      </div>
+                    <div className="flex justify-between text-gray-600 mb-4 text-sm">
+                      <span>Subtotal (Incl. Tax)</span>
+                      <span className="font-medium text-gray-900">
+                        ₹{(viewOrder.totalAmount || viewOrder.amount || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
+                      </span>
                     </div>
                   )}
-                </div>
-
-                <div className="pt-4 border-t border-border flex justify-between items-center">
-                  <span className="font-bold text-muted-foreground uppercase text-xs tracking-wider">Total</span>
-                  <span className="font-bold text-primary text-xl">₹{(viewOrder.totalAmount || viewOrder.amount || 0).toLocaleString("en-IN")}</span>
+                  
+                  <div className="flex justify-between items-end pt-4 border-t border-gray-200 mt-2">
+                    <span className="font-bold text-gray-400 uppercase text-xs tracking-wider">Grand Total</span>
+                    <span className="font-bold text-[#0f766e] text-2xl">
+                      ₹{(viewOrder.totalAmount || viewOrder.amount || 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
+                    </span>
+                  </div>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between pt-2">
-                <p className="text-sm font-medium text-muted-foreground">Current Status</p>
-                <StatusBadge status={viewOrder.status} />
+              {/* Invoice Footer */}
+              <div className="mt-16 pt-8 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between">
+                <div className="text-left mb-6 sm:mb-0">
+                  <p className="font-semibold text-gray-800 mb-1">Terms & Conditions</p>
+                  <p className="text-gray-500 text-xs 1leading-relaxed max-w-sm">All goods sold are non-returnable. Subject to ANAND jurisdiction. This is a computer generated invoice.</p>
+                </div>
+                <div className="text-center sm:text-right border-t sm:border-t-0 border-gray-200 pt-6 sm:pt-0 w-full sm:w-auto">
+                  <p className="font-bold text-gray-800 text-sm mb-8">For, Naval Soap Factory</p>
+                  <p className="text-gray-400 text-xs italic">Authorized Signatory</p>
+                </div>
               </div>
-            </div>
-            
-            <div className="px-6 py-4 border-t border-border bg-muted/10 text-right">
-              <Button onClick={() => setViewOrder(null)} variant="outline" className="px-8 border-border">
-                Close
-              </Button>
+
             </div>
           </div>
         </div>
