@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const nodemailer = require('nodemailer');
+require('dotenv').config();
 
 const app = express();
 app.use(cors());
@@ -11,22 +12,21 @@ const otps = new Map();
 
 let transporter;
 
-// Initialize Nodemailer with Ethereal Email
-async function initMailer() {
+// Initialize Nodemailer with Gmail SMTP
+function initMailer() {
   try {
-    const testAccount = await nodemailer.createTestAccount();
     transporter = nodemailer.createTransport({
-      host: testAccount.smtp.host,
-      port: testAccount.smtp.port,
-      secure: testAccount.smtp.secure,
+      host: 'smtp.gmail.com',
+      port: 587,
+      secure: false, // TLS
       auth: {
-        user: testAccount.user,
-        pass: testAccount.pass,
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
       },
     });
-    console.log('Ethereal Email initialized');
+    console.log('Gmail SMTP initialized');
   } catch (err) {
-    console.error('Failed to create Ethereal account', err);
+    console.error('Failed to create Gmail transporter', err);
   }
 }
 
@@ -42,25 +42,42 @@ app.post('/send-otp', async (req, res) => {
 
   try {
     const info = await transporter.sendMail({
-      from: '"Naval Soap Factory" <noreply@navalsoap.com>',
+      from: `\"Naval Soap Factory\" <${process.env.EMAIL_USER}>`,
       to: email,
-      subject: 'Your Login Verification Code',
+      subject: 'Your Login Verification Code by Naval Soap Factory ',
       text: `Your OTP for login is: ${otp}`,
       html: `
-        <div style="font-family: sans-serif; padding: 20px;">
-          <h2>Login Verification</h2>
-          <p>Your One-Time Password (OTP) for accessing your account is:</p>
-          <h1 style="color: #0f766e; letter-spacing: 5px;">${otp}</h1>
-          <p>Please enter this code to securely log in. It will expire soon.</p>
+        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f5; padding: 40px 20px;">
+          <div style="max-width: 500px; margin: 0 auto; background-color: #ffffff; padding: 30px; border-radius: 8px; border: 1px solid #e4e4e7; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+            
+            <h2 style="color: #111827; margin-top: 0; text-align: center;">Login Verification</h2>
+            
+            <p style="color: #4b5563; font-size: 16px; line-height: 1.5;">Your One-Time Password (OTP) for accessing your account is:</p>
+            
+            <div style="text-align: center; margin: 30px 0;">
+              <h1 style="color: #0f766e; letter-spacing: 8px; font-size: 36px; margin: 0; background-color: #f0fdfa; padding: 15px 20px; border-radius: 6px; display: inline-block;">
+                ${otp}
+              </h1>
+            </div>
+            
+            <p style="color: #4b5563; font-size: 16px; line-height: 1.5;">
+              Please enter this code to securely log in. <strong>This code will expire in 10 minutes.</strong>
+            </p>
+            
+            <hr style="border: none; border-top: 1px solid #e4e4e7; margin: 30px 0;">
+            
+            <p style="color: #6b7280; font-size: 12px; line-height: 1.5; text-align: center;">
+              If you did not request this code, please safely ignore this email. <strong>Never share this OTP with anyone.</strong>
+            </p>
+            
+          </div>
         </div>
       `,
     });
 
-    const url = nodemailer.getTestMessageUrl(info);
     console.log(`OTP sent to ${email}: ${otp}`);
-    console.log('Preview URL: %s', url);
 
-    res.json({ success: true, message: 'OTP sent', url });
+    res.json({ success: true, message: 'OTP sent' });
   } catch (error) {
     console.error('Error sending email:', error);
     res.status(500).json({ success: false, message: 'Failed to send OTP email' });
@@ -69,7 +86,7 @@ app.post('/send-otp', async (req, res) => {
 
 app.post('/verify-otp', (req, res) => {
   const { email, otp } = req.body;
-  
+
   if (!email || !otp) {
     return res.status(400).json({ success: false, message: 'Email and OTP required' });
   }
