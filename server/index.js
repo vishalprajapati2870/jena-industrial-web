@@ -101,6 +101,117 @@ app.post('/verify-otp', (req, res) => {
   }
 });
 
+function createInvoicePDF(order) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const doc = new PDFDocument({ margin: 50, size: 'A4' });
+      let buffers = [];
+      doc.on('data', buffers.push.bind(buffers));
+      doc.on('end', () => resolve(Buffer.concat(buffers)));
+      doc.on('error', reject);
+
+      // Generate PDF Content
+      doc.fontSize(20).fillColor('#0f766e').font('Helvetica-Bold').text('Naval Soap Factory', { align: 'left' });
+      doc.fontSize(10).fillColor('#4b5563').font('Helvetica-Bold').text('Silver Detergent Private Limited');
+      doc.font('Helvetica').text('6/D/1, Anand Industrial Estate, Borsad Road,');
+      doc.text('ANAND - 388 001. (Guj.)');
+      doc.text('Ph: +91 98258 21075, +91 98258 05478');
+      doc.text('GSTIN: 24XXXXX1234X1Z5');
+      doc.moveDown();
+
+      doc.fontSize(16).fillColor('#111827').font('Helvetica-Bold').text('INVOICE', { align: 'right' });
+      doc.fontSize(10).fillColor('#4b5563').font('Helvetica').text(`Invoice No: ${order.id}`, { align: 'right' });
+      doc.text(`Date: ${order.date}`, { align: 'right' });
+      doc.text(`Status: ${order.status}`, { align: 'right' });
+      doc.moveDown();
+
+      doc.fontSize(12).fillColor('#111827').font('Helvetica-Bold').text('Billed To:');
+      doc.fontSize(10).fillColor('#4b5563').font('Helvetica').text(order.customerName);
+      if (order.companyAddress) doc.text(order.companyAddress);
+      if (order.customerEmail) doc.text(order.customerEmail);
+      doc.moveDown();
+
+      // Table
+      const tableData = {
+        headers: [
+          { label: "Item Description", property: 'desc', width: 220 },
+          { label: "HSN/SAC", property: 'hsn', width: 60, align: 'center' },
+          { label: "Qty", property: 'qty', width: 50, align: 'center' },
+          { label: "Unit Rate", property: 'rate', width: 80, align: 'right' },
+          { label: "Amount", property: 'amount', width: 80, align: 'right' }
+        ],
+        rows: []
+      };
+
+      if (order.items && order.items.length > 0) {
+        order.items.forEach(item => {
+          tableData.rows.push([
+            `${item.product}\n${item.category}`,
+            '3401',
+            item.quantity.toString(),
+            `Rs. ${(item.amount / item.quantity).toFixed(2)}`,
+            `Rs. ${item.amount.toFixed(2)}`
+          ]);
+        });
+      } else {
+        tableData.rows.push([
+          `${order.product}\n${order.category}`,
+          '3401',
+          (order.quantity || 1).toString(),
+          `Rs. ${((order.amount || 0) / (order.quantity || 1)).toFixed(2)}`,
+          `Rs. ${(order.amount || 0).toFixed(2)}`
+        ]);
+      }
+
+      await doc.table(tableData, {
+        prepareHeader: () => doc.font("Helvetica-Bold").fontSize(10),
+        prepareRow: (row, indexColumn, indexRow, rectRow, rectCell) => doc.font("Helvetica").fontSize(10)
+      });
+
+      const totalAmount = order.totalAmount || order.amount || 0;
+
+      let totalsY = doc.y + 20;
+      doc.fontSize(10).font('Helvetica-Bold');
+      
+      // Add totals aligned to the right
+      const labelX = 350;
+      const valueX = 450;
+      
+      if (order.subtotal !== undefined) {
+        doc.text('Subtotal:', labelX, totalsY);
+        doc.text(`Rs. ${order.subtotal.toFixed(2)}`, valueX, totalsY, { align: 'right', width: 90 });
+        totalsY += 15;
+        
+        doc.text('CGST (9%):', labelX, totalsY);
+        doc.text(`Rs. ${(order.gstAmount / 2).toFixed(2)}`, valueX, totalsY, { align: 'right', width: 90 });
+        totalsY += 15;
+        
+        doc.text('SGST (9%):', labelX, totalsY);
+        doc.text(`Rs. ${(order.gstAmount / 2).toFixed(2)}`, valueX, totalsY, { align: 'right', width: 90 });
+        totalsY += 15;
+      } else {
+        doc.text('Subtotal (Incl. Tax):', labelX, totalsY);
+        doc.text(`Rs. ${totalAmount.toFixed(2)}`, valueX, totalsY, { align: 'right', width: 90 });
+        totalsY += 15;
+      }
+
+      totalsY += 10;
+      doc.fontSize(12).fillColor('#0f766e');
+      doc.text('Grand Total:', labelX, totalsY);
+      doc.text(`Rs. ${totalAmount.toFixed(2)}`, valueX, totalsY, { align: 'right', width: 90 });
+
+      doc.moveDown(4);
+      doc.fontSize(10).fillColor('#111827').font('Helvetica-Bold').text('Terms & Conditions', 50);
+      doc.fontSize(8).fillColor('#4b5563').font('Helvetica').text('All goods sold are non-returnable. Subject to ANAND jurisdiction. This is a computer generated invoice.', 50);
+
+      doc.end();
+    } catch (err) {
+      reject(err);
+    }
+  });
+}
+
+// REST route to send invoice to customer email
 app.post('/send-invoice', async (req, res) => {
   const { order } = req.body;
   
@@ -109,20 +220,15 @@ app.post('/send-invoice', async (req, res) => {
   }
 
   try {
-    const doc = new PDFDocument({ margin: 50, size: 'A4' });
-    let buffers = [];
-    doc.on('data', buffers.push.bind(buffers));
-    doc.on('end', async () => {
-      let pdfData = Buffer.concat(buffers);
-      
-      // Send email
-      try {
-        await transporter.sendMail({
-          from: `"Naval Soap Factory" <${process.env.EMAIL_USER}>`,
-          to: order.customerEmail,
-          subject: `Invoice for Order #${order.id} - Naval Soap Factory`,
-          text: `Dear ${order.customerName},\n\nYour order has been confirmed. Please find your invoice attached.\n\nThank you,\nNaval Soap Factory`,
-          html: `<!DOCTYPE html>
+    const pdfData = await createInvoicePDF(order);
+
+    // Send email
+    await transporter.sendMail({
+      from: `"Naval Soap Factory" <${process.env.EMAIL_USER}>`,
+      to: order.customerEmail,
+      subject: `Invoice for Order #${order.id} - Naval Soap Factory`,
+      text: `Dear ${order.customerName},\n\nYour order has been confirmed. Please find your invoice attached.\n\nThank you,\nNaval Soap Factory`,
+      html: `<!DOCTYPE html>
 <html>
 <body style="margin:0;padding:0;background:#f5f7f7;font-family:Arial, Helvetica, sans-serif;">
 
@@ -175,118 +281,36 @@ app.post('/send-invoice', async (req, res) => {
 
 </body>
 </html>`,
-          attachments: [
-            {
-              filename: `Invoice_${order.id}.pdf`,
-              content: pdfData,
-              contentType: 'application/pdf'
-            }
-          ]
-        });
+      attachments: [
+        {
+          filename: `Invoice_${order.id}.pdf`,
+          content: pdfData,
+          contentType: 'application/pdf'
+        }
+      ]
+    });
         
-        console.log(`Invoice email sent to ${order.customerEmail} for order ${order.id}`);
-        res.json({ success: true, message: 'Invoice email sent successfully.' });
-      } catch (emailError) {
-        console.error('Error sending invoice email:', emailError);
-        res.status(500).json({ success: false, message: 'Failed to send invoice email.' });
-      }
-    });
+    console.log(`Invoice email sent to ${order.customerEmail} for order ${order.id}`);
+    res.json({ success: true, message: 'Invoice email sent successfully.' });
 
-    // Generate PDF Content
-    doc.fontSize(20).fillColor('#0f766e').font('Helvetica-Bold').text('Naval Soap Factory', { align: 'left' });
-    doc.fontSize(10).fillColor('#4b5563').font('Helvetica-Bold').text('Silver Detergent Private Limited');
-    doc.font('Helvetica').text('6/D/1, Anand Industrial Estate, Borsad Road,');
-    doc.text('ANAND - 388 001. (Guj.)');
-    doc.text('Ph: +91 98258 21075, +91 98258 05478');
-    doc.text('GSTIN: 24XXXXX1234X1Z5');
-    doc.moveDown();
+  } catch (err) {
+    console.error('Invoice Delivery/Generation Error:', err);
+    res.status(500).json({ success: false, message: 'Failed to process invoice.' });
+  }
+});
 
-    doc.fontSize(16).fillColor('#111827').font('Helvetica-Bold').text('INVOICE', { align: 'right' });
-    doc.fontSize(10).fillColor('#4b5563').font('Helvetica').text(`Invoice No: ${order.id}`, { align: 'right' });
-    doc.text(`Date: ${order.date}`, { align: 'right' });
-    doc.text(`Status: ${order.status}`, { align: 'right' });
-    doc.moveDown();
+app.post('/download-invoice', async (req, res) => {
+  const { order } = req.body;
+  if (!order) {
+    return res.status(400).json({ success: false, message: 'Invalid order data.' });
+  }
 
-    doc.fontSize(12).fillColor('#111827').font('Helvetica-Bold').text('Billed To:');
-    doc.fontSize(10).fillColor('#4b5563').font('Helvetica').text(order.customerName);
-    if (order.companyAddress) doc.text(order.companyAddress);
-    doc.text(order.customerEmail);
-    doc.moveDown();
-
-    // Table
-    const tableData = {
-      headers: [
-        { label: "Item Description", property: 'desc', width: 220 },
-        { label: "HSN/SAC", property: 'hsn', width: 60, align: 'center' },
-        { label: "Qty", property: 'qty', width: 50, align: 'center' },
-        { label: "Unit Rate", property: 'rate', width: 80, align: 'right' },
-        { label: "Amount", property: 'amount', width: 80, align: 'right' }
-      ],
-      rows: []
-    };
-
-    if (order.items && order.items.length > 0) {
-      order.items.forEach(item => {
-        tableData.rows.push([
-          `${item.product}\n${item.category}`,
-          '3401',
-          item.quantity.toString(),
-          `Rs. ${(item.amount / item.quantity).toFixed(2)}`,
-          `Rs. ${item.amount.toFixed(2)}`
-        ]);
-      });
-    } else {
-      tableData.rows.push([
-        `${order.product}\n${order.category}`,
-        '3401',
-        (order.quantity || 1).toString(),
-        `Rs. ${((order.amount || 0) / (order.quantity || 1)).toFixed(2)}`,
-        `Rs. ${(order.amount || 0).toFixed(2)}`
-      ]);
-    }
-
-    await doc.table(tableData, {
-      prepareHeader: () => doc.font("Helvetica-Bold").fontSize(10),
-      prepareRow: (row, indexColumn, indexRow, rectRow, rectCell) => doc.font("Helvetica").fontSize(10)
-    });
-
-    const totalAmount = order.totalAmount || order.amount || 0;
-
-    let totalsY = doc.y + 20;
-    doc.fontSize(10).font('Helvetica-Bold');
+  try {
+    const pdfData = await createInvoicePDF(order);
     
-    // Add totals aligned to the right
-    const labelX = 350;
-    const valueX = 450;
-    
-    if (order.subtotal !== undefined) {
-      doc.text('Subtotal:', labelX, totalsY);
-      doc.text(`Rs. ${order.subtotal.toFixed(2)}`, valueX, totalsY, { align: 'right', width: 90 });
-      totalsY += 15;
-      
-      doc.text('CGST (9%):', labelX, totalsY);
-      doc.text(`Rs. ${(order.gstAmount / 2).toFixed(2)}`, valueX, totalsY, { align: 'right', width: 90 });
-      totalsY += 15;
-      
-      doc.text('SGST (9%):', labelX, totalsY);
-      doc.text(`Rs. ${(order.gstAmount / 2).toFixed(2)}`, valueX, totalsY, { align: 'right', width: 90 });
-      totalsY += 15;
-    } else {
-      doc.text('Subtotal (Incl. Tax):', labelX, totalsY);
-      doc.text(`Rs. ${totalAmount.toFixed(2)}`, valueX, totalsY, { align: 'right', width: 90 });
-      totalsY += 15;
-    }
-
-    totalsY += 10;
-    doc.fontSize(12).fillColor('#0f766e');
-    doc.text('Grand Total:', labelX, totalsY);
-    doc.text(`Rs. ${totalAmount.toFixed(2)}`, valueX, totalsY, { align: 'right', width: 90 });
-
-    doc.moveDown(4);
-    doc.fontSize(10).fillColor('#111827').font('Helvetica-Bold').text('Terms & Conditions', 50);
-    doc.fontSize(8).fillColor('#4b5563').font('Helvetica').text('All goods sold are non-returnable. Subject to ANAND jurisdiction. This is a computer generated invoice.', 50);
-
-    doc.end();
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename=Invoice_${order.id}.pdf`);
+    res.send(pdfData);
 
   } catch (err) {
     console.error('PDF Generation Error:', err);

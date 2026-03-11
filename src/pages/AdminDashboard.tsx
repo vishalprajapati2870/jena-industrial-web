@@ -91,6 +91,7 @@ const AdminDashboard = () => {
   const [activeFilter, setActiveFilter] = useState<"ALL" | Status>("ALL");
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [viewOrder, setViewOrder] = useState<Order | null>(null);
+  const [isDownloading, setIsDownloading] = useState(false);
   const [orders, setOrders] = useState<Order[]>(() =>
     JSON.parse(localStorage.getItem("nsf_orders") || "[]")
   );
@@ -169,6 +170,43 @@ const AdminDashboard = () => {
       } else if (confirmedOrder && !confirmedOrder.customerEmail) {
         toast.info("Order confirmed. No customer email provided for invoice.");
       }
+    }
+  };
+
+  const handleDownloadInvoice = async (order: Order) => {
+    try {
+      setIsDownloading(true);
+      const toastId = toast.loading("Generating PDF Download...");
+      const response = await fetch("http://localhost:5000/download-invoice", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ order }),
+      });
+
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.message || "Failed to generate PDF on server");
+      }
+
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `Invoice_${order.id}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      toast.success("Invoice downloaded successfully!", { id: toastId });
+    } catch (err) {
+      console.error("Download Error:", err);
+      toast.error("Failed to download invoice.");
+    } finally {
+      setIsDownloading(false);
     }
   };
 
@@ -418,13 +456,14 @@ const AdminDashboard = () => {
               </h3>
               <div className="flex items-center gap-2">
                 <Button
-                  onClick={() => window.print()}
-                  variant="outline"
+                  onClick={() => handleDownloadInvoice(viewOrder)}
+                  disabled={isDownloading}
+                  variant="default"
                   size="sm"
                   className="flex items-center gap-2 h-9"
                 >
-                  <Printer className="w-4 h-4" />
-                  Print
+                  <Download className="w-4 h-4" />
+                  {isDownloading ? "Downloading..." : "Download PDF"}
                 </Button>
                 <button
                   onClick={() => setViewOrder(null)}
