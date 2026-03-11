@@ -1,7 +1,7 @@
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
-import { Trash2, ArrowLeft } from "lucide-react";
+import { Trash2, ArrowLeft, Plus, ShoppingBag } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 
 const Cart = () => {
@@ -34,6 +34,7 @@ const Cart = () => {
 
         {cartItems.length === 0 ? (
           <div className="bg-card border border-border rounded-lg p-12 text-center shadow-sm">
+            <ShoppingBag className="w-16 h-16 mx-auto text-muted-foreground/40 mb-4" />
             <h2 className="text-2xl font-semibold text-muted-foreground mb-4">
               Your cart is empty
             </h2>
@@ -48,6 +49,7 @@ const Cart = () => {
           </div>
         ) : (
           <div className="bg-card border border-border rounded-lg shadow-sm overflow-hidden">
+            {/* Cart Items */}
             <ul className="divide-y divide-border">
               {cartItems.map((item) => (
                 <li key={item.id} className="p-6 flex flex-col sm:flex-row items-center gap-6">
@@ -85,13 +87,34 @@ const Cart = () => {
                 </li>
               ))}
             </ul>
-            <div className="bg-muted/30 p-6 md:p-8 flex flex-col sm:flex-row items-center justify-between border-t border-border mt-4">
+
+            {/* Add More Items Button */}
+            <div className="px-6 py-5 border-t border-border bg-muted/10">
+              <Link to="/products">
+                <Button
+                  variant="outline"
+                  className="w-full border-2 border-dashed border-primary/40 text-primary hover:text-primary hover:bg-primary/10 hover:border-primary font-semibold py-6 h-auto text-base gap-2 transition-all duration-300"
+                >
+                  <Plus className="w-5 h-5" />
+                  Add More Items
+                </Button>
+              </Link>
+              <p className="text-xs text-muted-foreground text-center mt-3">
+                Your existing cart items will be preserved when you add more products
+              </p>
+            </div>
+
+            {/* Total & Checkout */}
+            <div className="bg-muted/30 p-6 md:p-8 flex flex-col sm:flex-row items-center justify-between border-t border-border">
               <div>
                 <p className="text-muted-foreground text-sm font-medium mb-1">
                   Total Amount
                 </p>
                 <p className="text-3xl font-bold text-heading">
                   ₹{calculateTotal()}
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {cartItems.length} {cartItems.length === 1 ? "item" : "items"} in cart
                 </p>
               </div>
               <div className="w-full sm:w-auto mt-6 sm:mt-0">
