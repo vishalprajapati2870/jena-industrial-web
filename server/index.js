@@ -121,7 +121,60 @@ app.post('/send-invoice', async (req, res) => {
           from: `"Naval Soap Factory" <${process.env.EMAIL_USER}>`,
           to: order.customerEmail,
           subject: `Invoice for Order #${order.id} - Naval Soap Factory`,
-          text: `Dear ${order.customerName},\n\nYour order #${order.id} has been confirmed. Please find your invoice attached.\n\nThank you,\nNaval Soap Factory`,
+          text: `Dear ${order.customerName},\n\nYour order has been confirmed. Please find your invoice attached.\n\nThank you,\nNaval Soap Factory`,
+          html: `<!DOCTYPE html>
+<html>
+<body style="margin:0;padding:0;background:#f5f7f7;font-family:Arial, Helvetica, sans-serif;">
+
+<table width="100%" cellpadding="0" cellspacing="0" style="padding:30px 0;background:#f5f7f7;">
+  <tr>
+    <td align="center">
+
+      <!-- Email Container -->
+      <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:8px;overflow:hidden;border:1px solid #e5e5e5;">
+
+        <!-- Header -->
+        <tr>
+          <td style="background:#0f766e;color:#ffffff;padding:20px;text-align:center;font-size:22px;font-weight:bold;">
+            Naval Soap Factory
+          </td>
+        </tr>
+
+        <!-- Body -->
+        <tr>
+          <td style="padding:30px;color:#333333;font-size:15px;line-height:1.6;">
+
+            <p style="margin:0 0 15px 0;">Dear <strong>${order.customerName}</strong>,</p>
+
+            <p style="margin:0 0 15px 0;">
+              Your order has been confirmed.
+            </p>
+
+            <p style="margin:0 0 20px 0;">
+              Please find your invoice attached with this email.
+            </p>
+
+            <p style="margin:25px 0 0 0;">Thank you,</p>
+            <p style="margin:5px 0 0 0;font-weight:bold;color:#0f766e;">Naval Soap Factory</p>
+
+          </td>
+        </tr>
+
+        <!-- Footer -->
+        <tr>
+          <td style="background:#f0fdfa;text-align:center;padding:15px;font-size:12px;color:#555;">
+            © ${new Date().getFullYear()} Naval Soap Factory. All rights reserved.
+          </td>
+        </tr>
+
+      </table>
+
+    </td>
+  </tr>
+</table>
+
+</body>
+</html>`,
           attachments: [
             {
               filename: `Invoice_${order.id}.pdf`,
