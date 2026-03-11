@@ -110,6 +110,26 @@ All colors MUST be HSL.
   display: none;
 }
 
+/* Teal scrollbar for dropdown menus */
+.scrollbar-teal {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(172 76% 36%) hsl(156 25% 96%);
+}
+.scrollbar-teal::-webkit-scrollbar {
+  width: 5px;
+}
+.scrollbar-teal::-webkit-scrollbar-track {
+  background: hsl(156 25% 96%);
+  border-radius: 10px;
+}
+.scrollbar-teal::-webkit-scrollbar-thumb {
+  background-color: hsl(172 76% 36%);
+  border-radius: 10px;
+}
+.scrollbar-teal::-webkit-scrollbar-thumb:hover {
+  background-color: hsl(172 76% 28%);
+}
+
 @media print {
   @page {
     margin: 1cm;

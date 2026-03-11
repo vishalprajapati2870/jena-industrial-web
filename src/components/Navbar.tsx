@@ -107,7 +107,7 @@ export const Navbar = () => {
                           Detergent Powder
                         </span>
                       </div>
-                      <div className="py-2 max-h-[280px] overflow-y-auto">
+                      <div className="py-2 max-h-[280px] overflow-y-auto scrollbar-teal ">
                         {detergentPowders.map((product, idx) => (
                           <Link
                             key={idx}
@@ -129,7 +129,7 @@ export const Navbar = () => {
                           Detergent Cake
                         </span>
                       </div>
-                      <div className="py-2 max-h-[280px] overflow-y-auto">
+                      <div className="py-2 max-h-[280px] overflow-y-auto scrollbar-teal">
                         {detergentCakes.map((product, idx) => (
                           <Link
                             key={idx}
