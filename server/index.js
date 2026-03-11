@@ -110,99 +110,227 @@ function createInvoicePDF(order) {
       doc.on('end', () => resolve(Buffer.concat(buffers)));
       doc.on('error', reject);
 
-      // Generate PDF Content
-      doc.fontSize(20).fillColor('#0f766e').font('Helvetica-Bold').text('Naval Soap Factory', { align: 'left' });
-      doc.fontSize(10).fillColor('#4b5563').font('Helvetica-Bold').text('Silver Detergent Private Limited');
-      doc.font('Helvetica').text('6/D/1, Anand Industrial Estate, Borsad Road,');
-      doc.text('ANAND - 388 001. (Guj.)');
-      doc.text('Ph: +91 98258 21075, +91 98258 05478');
-      doc.text('GSTIN: 24XXXXX1234X1Z5');
-      doc.moveDown();
+      const pageWidth = doc.page.width;       // 595
+      const margin = 50;
+      const contentWidth = pageWidth - margin * 2; // 495
 
-      doc.fontSize(16).fillColor('#111827').font('Helvetica-Bold').text('INVOICE', { align: 'right' });
-      doc.fontSize(10).fillColor('#4b5563').font('Helvetica').text(`Invoice No: ${order.id}`, { align: 'right' });
-      doc.text(`Date: ${order.date}`, { align: 'right' });
-      doc.text(`Status: ${order.status}`, { align: 'right' });
-      doc.moveDown();
+      // ─────────────────────────────────────────
+      // 1. INVOICE TITLE – centred at top
+      // ─────────────────────────────────────────
+      doc.fontSize(22).fillColor('#111827').font('Helvetica-Bold')
+         .text('INVOICE', margin, 50, { align: 'center', width: contentWidth });
 
-      doc.fontSize(12).fillColor('#111827').font('Helvetica-Bold').text('Billed To:');
-      doc.fontSize(10).fillColor('#4b5563').font('Helvetica').text(order.customerName);
-      if (order.companyAddress) doc.text(order.companyAddress);
-      if (order.customerEmail) doc.text(order.customerEmail);
-      doc.moveDown();
+      // ─────────────────────────────────────────
+      // 2. Invoice meta row  (No | Date | Status)
+      // ─────────────────────────────────────────
+      const metaY = 82;
+      const metaBoxX = margin + 40;
+      const metaBoxW = contentWidth - 80;
+      const metaBoxH = 28;
 
-      // Table
+      // Light border box
+      doc.roundedRect(metaBoxX, metaY, metaBoxW, metaBoxH, 4)
+         .strokeColor('#e5e7eb').lineWidth(1).stroke();
+
+      doc.fontSize(9).fillColor('#374151').font('Helvetica-Bold');
+
+      // Invoice No
+      doc.text('Invoice No:', metaBoxX + 10, metaY + 9, { continued: true });
+      doc.fillColor('#0f766e').font('Helvetica').text(`  ${order.id || 'INV-XXXXXX'}`);
+
+      // Date (centered)
+      doc.fillColor('#374151').font('Helvetica-Bold')
+         .text('Date:', metaBoxX + 178, metaY + 9, { continued: true });
+      doc.fillColor('#111827').font('Helvetica').text(`  ${order.date || ''}`);
+
+      // Status badge (teal pill on right)
+      const statusLabel = (order.status || 'CONFIRMED').toUpperCase();
+      const statusBoxX = metaBoxX + metaBoxW - 82;
+      const statusBoxY = metaY + 6;
+      doc.roundedRect(statusBoxX, statusBoxY, 72, 16, 8)
+         .fillColor('#0f766e').fill();
+      doc.fontSize(7).fillColor('#ffffff').font('Helvetica-Bold')
+         .text(statusLabel, statusBoxX, statusBoxY + 5, { width: 72, align: 'center' });
+
+      // ──────────────────────────────────────────────
+      // 3. FROM / BILLED TO – two columns side by side
+      // ──────────────────────────────────────────────
+      const sectionY = metaY + metaBoxH + 24;
+      const colW = contentWidth / 2;
+
+      // FROM
+      doc.fontSize(7.5).fillColor('#6b7280').font('Helvetica-Bold')
+         .text('FROM', margin, sectionY, { width: colW });
+
+      // BILLED TO
+      doc.fontSize(7.5).fillColor('#6b7280').font('Helvetica-Bold')
+         .text('BILLED TO', margin + colW, sectionY, { width: colW, align: 'right' });
+
+      let fromY = sectionY + 14;
+
+      // FROM details (left column)
+      doc.fontSize(13).fillColor('#111827').font('Helvetica-Bold')
+         .text('Naval Soap Factory', margin, fromY, { width: colW });
+      fromY += 18;
+      doc.fontSize(9).fillColor('#1e3a5f').font('Helvetica-Bold')
+         .text('Silver Detergent Private Limited', margin, fromY, { width: colW });
+      fromY += 13;
+      doc.fontSize(8.5).fillColor('#4b5563').font('Helvetica')
+         .text('6/D/1, Anand Industrial Estate, Borsad Road,', margin, fromY, { width: colW });
+      fromY += 12;
+      doc.text('ANAND - 388 001. (Guj.)', margin, fromY, { width: colW });
+      fromY += 12;
+      doc.text('Ph: +91 98258 21075, +91 98258 05478', margin, fromY, { width: colW });
+      fromY += 12;
+      doc.fillColor('#0f766e').text('navalsoap@yahoo.com', margin, fromY, { width: colW });
+      fromY += 18;
+
+      // GSTIN badge
+      doc.roundedRect(margin, fromY, 130, 18, 4)
+         .strokeColor('#93c5fd').lineWidth(1).stroke();
+      doc.fillColor('#1e40af').fontSize(8).font('Helvetica-Bold')
+         .text('GSTIN: 24XXXXX1234X1Z5', margin + 6, fromY + 5, { width: 118 });
+
+      // BILLED TO details (right column) – aligned to right edge
+      const rightX = margin + colW;
+      let billY = sectionY + 14;
+
+      // Customer shop name
+      const shopName = order.shopName || order.customerName || 'Customer Shop Name';
+      doc.fontSize(12).fillColor('#374151').font('Helvetica-Bold')
+         .text(shopName, rightX, billY, { width: colW, align: 'right' });
+      billY += 18;
+
+      // Customer name (CAPS)
+      doc.fontSize(8).fillColor('#111827').font('Helvetica-Bold')
+         .text((order.customerName || '').toUpperCase(), rightX, billY, { width: colW, align: 'right' });
+      billY += 13;
+
+      // Address
+      if (order.companyAddress) {
+        doc.fontSize(8.5).fillColor('#4b5563').font('Helvetica')
+           .text(order.companyAddress, rightX, billY, { width: colW, align: 'right' });
+        billY += order.companyAddress.split('\n').length * 12 + 2;
+      }
+
+      // Phone
+      if (order.customerPhone) {
+        doc.fontSize(8.5).fillColor('#4b5563').font('Helvetica')
+           .text(`Ph: ${order.customerPhone}`, rightX, billY, { width: colW, align: 'right' });
+        billY += 13;
+      }
+
+      // Email
+      if (order.customerEmail) {
+        doc.fontSize(8.5).fillColor('#0f766e').font('Helvetica')
+           .text(order.customerEmail, rightX, billY, { width: colW, align: 'right' });
+      }
+
+      // ──────────────────────────────────────────
+      // 4. ITEMS TABLE
+      // ──────────────────────────────────────────
+      const tableY = Math.max(fromY + 36, billY + 24);
+      doc.y = tableY;
+      doc.x = margin; // Fix table offset
+
       const tableData = {
         headers: [
-          { label: "Item Description", property: 'desc', width: 220 },
-          { label: "HSN/SAC", property: 'hsn', width: 60, align: 'center' },
-          { label: "Qty", property: 'qty', width: 50, align: 'center' },
-          { label: "Unit Rate", property: 'rate', width: 80, align: 'right' },
-          { label: "Amount", property: 'amount', width: 80, align: 'right' }
+          { label: 'ITEM DESCRIPTION', property: 'desc', width: 210 },
+          { label: 'HSN/SAC',          property: 'hsn',  width: 65, align: 'center' },
+          { label: 'QTY',              property: 'qty',  width: 50, align: 'center' },
+          { label: 'UNIT RATE',        property: 'rate', width: 85, align: 'right'  },
+          { label: 'AMOUNT',           property: 'amt',  width: 85, align: 'right'  },
         ],
-        rows: []
+        rows: [],
       };
+
+      const unitPrice = (item) => item.amount / item.quantity;
 
       if (order.items && order.items.length > 0) {
         order.items.forEach(item => {
           tableData.rows.push([
-            `${item.product}\n${item.category}`,
+            `${item.product}\n${item.category || ''}`,
             '3401',
             item.quantity.toString(),
-            `Rs. ${(item.amount / item.quantity).toFixed(2)}`,
-            `Rs. ${item.amount.toFixed(2)}`
+            `Rs. ${unitPrice(item).toFixed(2)}`,
+            `Rs. ${item.amount.toFixed(2)}`,
           ]);
         });
       } else {
+        const qty = order.quantity || 1;
+        const amt = order.amount || 0;
         tableData.rows.push([
-          `${order.product}\n${order.category}`,
+          `${order.product || ''}\n${order.category || ''}`,
           '3401',
-          (order.quantity || 1).toString(),
-          `Rs. ${((order.amount || 0) / (order.quantity || 1)).toFixed(2)}`,
-          `Rs. ${(order.amount || 0).toFixed(2)}`
+          qty.toString(),
+          `Rs. ${(amt / qty).toFixed(2)}`,
+          `Rs. ${amt.toFixed(2)}`,
         ]);
       }
 
       await doc.table(tableData, {
-        prepareHeader: () => doc.font("Helvetica-Bold").fontSize(10),
-        prepareRow: (row, indexColumn, indexRow, rectRow, rectCell) => doc.font("Helvetica").fontSize(10)
+        prepareHeader: () => doc.font('Helvetica-Bold').fontSize(9).fillColor('#6b7280'),
+        prepareRow: () => doc.font('Helvetica').fontSize(9.5).fillColor('#111827'),
       });
 
+      // ──────────────────────────────────────────
+      // 5. TOTALS – right-aligned box
+      // ──────────────────────────────────────────
       const totalAmount = order.totalAmount || order.amount || 0;
+      const totalsBoxW = 240;
+      const totalsBoxX = pageWidth - margin - totalsBoxW;
+      let totalsY = doc.y + 18;
 
-      let totalsY = doc.y + 20;
-      doc.fontSize(10).font('Helvetica-Bold');
-      
-      // Add totals aligned to the right
-      const labelX = 350;
-      const valueX = 450;
-      
+      const drawTotalsRow = (label, value, bold = false, color = '#111827') => {
+        doc.fontSize(9.5)
+           .fillColor('#374151').font(bold ? 'Helvetica-Bold' : 'Helvetica')
+           .text(label, totalsBoxX, totalsY, { width: 130 });
+        doc.fontSize(9.5)
+           .fillColor(color).font(bold ? 'Helvetica-Bold' : 'Helvetica')
+           .text(value, totalsBoxX + 130, totalsY, { width: 110, align: 'right' });
+        totalsY += 18;
+      };
+
       if (order.subtotal !== undefined) {
-        doc.text('Subtotal:', labelX, totalsY);
-        doc.text(`Rs. ${order.subtotal.toFixed(2)}`, valueX, totalsY, { align: 'right', width: 90 });
-        totalsY += 15;
-        
-        doc.text('CGST (9%):', labelX, totalsY);
-        doc.text(`Rs. ${(order.gstAmount / 2).toFixed(2)}`, valueX, totalsY, { align: 'right', width: 90 });
-        totalsY += 15;
-        
-        doc.text('SGST (9%):', labelX, totalsY);
-        doc.text(`Rs. ${(order.gstAmount / 2).toFixed(2)}`, valueX, totalsY, { align: 'right', width: 90 });
-        totalsY += 15;
+        drawTotalsRow('Subtotal', `Rs. ${order.subtotal.toFixed(2)}`);
+        drawTotalsRow('CGST (9%)', `Rs. ${(order.gstAmount / 2).toFixed(2)}`, false, '#0f766e');
+        drawTotalsRow('SGST (9%)', `Rs. ${(order.gstAmount / 2).toFixed(2)}`, false, '#0f766e');
       } else {
-        doc.text('Subtotal (Incl. Tax):', labelX, totalsY);
-        doc.text(`Rs. ${totalAmount.toFixed(2)}`, valueX, totalsY, { align: 'right', width: 90 });
-        totalsY += 15;
+        drawTotalsRow('Subtotal', `Rs. ${totalAmount.toFixed(2)}`);
       }
 
-      totalsY += 10;
-      doc.fontSize(12).fillColor('#0f766e');
-      doc.text('Grand Total:', labelX, totalsY);
-      doc.text(`Rs. ${totalAmount.toFixed(2)}`, valueX, totalsY, { align: 'right', width: 90 });
+      // dashed divider
+      doc.moveTo(totalsBoxX, totalsY - 4)
+         .lineTo(totalsBoxX + totalsBoxW, totalsY - 4)
+         .dash(3, { space: 3 }).strokeColor('#d1d5db').lineWidth(0.8).stroke();
+      doc.undash();
+      totalsY += 6;
 
-      doc.moveDown(4);
-      doc.fontSize(10).fillColor('#111827').font('Helvetica-Bold').text('Terms & Conditions', 50);
-      doc.fontSize(8).fillColor('#4b5563').font('Helvetica').text('All goods sold are non-returnable. Subject to ANAND jurisdiction. This is a computer generated invoice.', 50);
+      // Grand Total row
+      doc.fontSize(11).fillColor('#111827').font('Helvetica-Bold')
+         .text('Grand Total', totalsBoxX, totalsY, { width: 130 });
+      doc.fontSize(11).fillColor('#0f766e').font('Helvetica-Bold')
+         .text(`Rs. ${totalAmount.toFixed(2)}`, totalsBoxX + 130, totalsY, { width: 110, align: 'right' });
+
+
+      // ──────────────────────────────────────────
+      // 6. TERMS & CONDITIONS
+      // ──────────────────────────────────────────
+      const tcY = totalsY + 50;
+      doc.fontSize(9).fillColor('#111827').font('Helvetica-Bold')
+         .text('TERMS & CONDITIONS', margin, tcY);
+
+      const tcItems = [
+        'All goods sold are non-returnable.',
+        'Subject to ANAND jurisdiction.',
+        'This is a computer-generated invoice and does not require a physical signature.',
+      ];
+      let tcLineY = tcY + 14;
+      tcItems.forEach(item => {
+        doc.fontSize(8).fillColor('#4b5563').font('Helvetica')
+           .text(`\u2022  ${item}`, margin + 4, tcLineY, { width: contentWidth - 4 });
+        tcLineY += 13;
+      });
 
       doc.end();
     } catch (err) {
