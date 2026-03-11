@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import {
   Shield,
   Search,
@@ -131,13 +132,44 @@ const AdminDashboard = () => {
     return matchFilter && matchSearch;
   });
 
-  const updateStatus = (id: string, status: Status) => {
+  const updateStatus = async (id: string, status: Status) => {
     setOrders((prev) => {
       const updated = prev.map((o) => (o.id === id ? { ...o, status } : o));
       localStorage.setItem("nsf_orders", JSON.stringify(updated));
       return updated;
     });
     setOpenMenu(null);
+
+    // If order is confirmed and customer email is present, send email invoice
+    if (status === "CONFIRMED") {
+      const confirmedOrder = orders.find(o => o.id === id);
+      if (confirmedOrder && confirmedOrder.customerEmail) {
+        const toastId = toast.loading("Generating and sending invoice email...");
+        try {
+          // Add updated status
+          const payload = { ...confirmedOrder, status: "CONFIRMED" };
+          const response = await fetch("http://localhost:5000/send-invoice", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ order: payload }),
+          });
+
+          const data = await response.json();
+          if (data.success) {
+            toast.success("Invoice email sent successfully!", { id: toastId });
+          } else {
+            toast.error(data.message || "Failed to send invoice email.", { id: toastId });
+          }
+        } catch (err) {
+          console.error("Error sending invoice email:", err);
+          toast.error("Network error when sending invoice.", { id: toastId });
+        }
+      } else if (confirmedOrder && !confirmedOrder.customerEmail) {
+        toast.info("Order confirmed. No customer email provided for invoice.");
+      }
+    }
   };
 
   const filters: Array<"ALL" | Status> = ["ALL", "PENDING", "CONFIRMED", "CANCELLED"];

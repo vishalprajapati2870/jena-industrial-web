@@ -32,6 +32,10 @@ const Cart = () => {
     0
   );
 
+  const cgst = subtotal * 0.09;
+  const sgst = subtotal * 0.09;
+  const totalAmount = subtotal + cgst + sgst;
+
   return (
     <div className="min-h-screen bg-background py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -151,20 +155,32 @@ const Cart = () => {
                 </h2>
 
                 <div className="space-y-4 mb-6">
-                  <div className="flex justify-between items-center">
+                  <div className="flex justify-between items-center text-sm">
                     <span className="text-muted-foreground">Subtotal</span>
-                    <span className="font-semibold text-heading">
-                      ₹{subtotal.toLocaleString("en-IN")}
+                    <span className="font-medium text-heading">
+                      ₹{subtotal.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </span>
                   </div>
-                  <div className="flex justify-between items-center">
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-muted-foreground">CGST (9%)</span>
+                    <span className="font-medium text-heading">
+                      ₹{cgst.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-muted-foreground">SGST (9%)</span>
+                    <span className="font-medium text-heading">
+                      ₹{sgst.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center text-sm">
                     <span className="text-muted-foreground">Estimated Shipping</span>
-                    <span className="font-semibold text-heading">Free</span>
+                    <span className="font-medium text-heading">Free</span>
                   </div>
                   <div className="border-t border-border pt-4 flex justify-between items-center">
                     <span className="font-bold text-heading text-lg">Total</span>
                     <span className="font-bold text-primary text-xl">
-                      ₹{subtotal.toLocaleString("en-IN")}
+                      ₹{totalAmount.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </span>
                   </div>
                 </div>

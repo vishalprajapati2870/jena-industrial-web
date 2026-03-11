@@ -75,6 +75,9 @@ const Checkout = () => {
     return calculateSubtotal() * 0.18; // Assuming 18% GST standard rate for example
   };
 
+  const calculateCGST = () => calculateSubtotal() * 0.09;
+  const calculateSGST = () => calculateSubtotal() * 0.09;
+
   const calculateTotal = () => {
     return calculateSubtotal() + calculateTax();
   };
@@ -363,8 +366,12 @@ const Checkout = () => {
                 <span className="text-foreground font-medium">₹{calculateSubtotal().toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-muted-foreground">
-                <span>Estimated Tax (18%)</span>
-                <span className="text-foreground font-medium">₹{calculateTax().toFixed(2)}</span>
+                <span>CGST (9%)</span>
+                <span className="text-foreground font-medium">₹{calculateCGST().toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between text-muted-foreground">
+                <span>SGST (9%)</span>
+                <span className="text-foreground font-medium">₹{calculateSGST().toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-heading font-bold text-xl pt-3 border-t border-border mt-3">
                 <span>Total</span>
