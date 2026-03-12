@@ -136,7 +136,7 @@ function createInvoicePDF(order) {
 
       // Invoice No
       doc.text('Invoice No:', metaBoxX + 10, metaY + 9, { continued: true });
-      doc.fillColor('#0f766e').font('Helvetica').text(`  ${order.id || 'INV-XXXXXX'}`);
+      doc.fillColor('#111827').font('Helvetica').text(`  ${order.id || 'INV-XXXXXX'}`);
 
       // Date (centered)
       doc.fillColor('#374151').font('Helvetica-Bold')
@@ -148,7 +148,7 @@ function createInvoicePDF(order) {
       const statusBoxX = metaBoxX + metaBoxW - 82;
       const statusBoxY = metaY + 6;
       doc.roundedRect(statusBoxX, statusBoxY, 72, 16, 8)
-         .fillColor('#0f766e').fill();
+         .fillColor('#4b5563').fill();
       doc.fontSize(7).fillColor('#ffffff').font('Helvetica-Bold')
          .text(statusLabel, statusBoxX, statusBoxY + 5, { width: 72, align: 'center' });
 
@@ -172,7 +172,7 @@ function createInvoicePDF(order) {
       doc.fontSize(13).fillColor('#111827').font('Helvetica-Bold')
          .text('Naval Soap Factory', margin, fromY, { width: colW });
       fromY += 18;
-      doc.fontSize(9).fillColor('#1e3a5f').font('Helvetica-Bold')
+      doc.fontSize(9).fillColor('#111827').font('Helvetica-Bold')
          .text('Silver Detergent Private Limited', margin, fromY, { width: colW });
       fromY += 13;
       doc.fontSize(8.5).fillColor('#4b5563').font('Helvetica')
@@ -182,13 +182,13 @@ function createInvoicePDF(order) {
       fromY += 12;
       doc.text('Ph: +91 98258 21075, +91 98258 05478', margin, fromY, { width: colW });
       fromY += 12;
-      doc.fillColor('#0f766e').text('navalsoap@yahoo.com', margin, fromY, { width: colW });
+      doc.fillColor('#4b5563').text('navalsoap@yahoo.com', margin, fromY, { width: colW });
       fromY += 18;
 
       // GSTIN badge
       doc.roundedRect(margin, fromY, 130, 18, 4)
-         .strokeColor('#93c5fd').lineWidth(1).stroke();
-      doc.fillColor('#1e40af').fontSize(8).font('Helvetica-Bold')
+         .strokeColor('#d1d5db').lineWidth(1).stroke();
+      doc.fillColor('#374151').fontSize(8).font('Helvetica-Bold')
          .text('GSTIN: 24XXXXX1234X1Z5', margin + 6, fromY + 5, { width: 118 });
 
       // BILLED TO details (right column) – aligned to right edge
@@ -222,7 +222,7 @@ function createInvoicePDF(order) {
 
       // Email
       if (order.customerEmail) {
-        doc.fontSize(8.5).fillColor('#0f766e').font('Helvetica')
+        doc.fontSize(8.5).fillColor('#4b5563').font('Helvetica')
            .text(order.customerEmail, rightX, billY, { width: colW, align: 'right' });
       }
 
@@ -231,15 +231,14 @@ function createInvoicePDF(order) {
       // ──────────────────────────────────────────
       const tableY = Math.max(fromY + 36, billY + 24);
       doc.y = tableY;
-      doc.x = margin; // Fix table offset
+      doc.x = margin;
 
       const tableData = {
         headers: [
-          { label: 'ITEM DESCRIPTION', property: 'desc', width: 210 },
-          { label: 'HSN/SAC',          property: 'hsn',  width: 65, align: 'center' },
+          { label: 'ITEM DESCRIPTION', property: 'desc', width: 260 },
           { label: 'QTY',              property: 'qty',  width: 50, align: 'center' },
-          { label: 'UNIT RATE',        property: 'rate', width: 85, align: 'right'  },
-          { label: 'AMOUNT',           property: 'amt',  width: 85, align: 'right'  },
+          { label: 'UNIT RATE',        property: 'rate', width: 90, align: 'right'  },
+          { label: 'AMOUNT',           property: 'amt',  width: 90, align: 'right'  },
         ],
         rows: [],
       };
@@ -250,7 +249,6 @@ function createInvoicePDF(order) {
         order.items.forEach(item => {
           tableData.rows.push([
             `${item.product}\n${item.category || ''}`,
-            '3401',
             item.quantity.toString(),
             `Rs. ${unitPrice(item).toFixed(2)}`,
             `Rs. ${item.amount.toFixed(2)}`,
@@ -261,56 +259,101 @@ function createInvoicePDF(order) {
         const amt = order.amount || 0;
         tableData.rows.push([
           `${order.product || ''}\n${order.category || ''}`,
-          '3401',
           qty.toString(),
           `Rs. ${(amt / qty).toFixed(2)}`,
           `Rs. ${amt.toFixed(2)}`,
         ]);
       }
 
+      const tableTopY = doc.y;
+
+      // Draw light grey background for header (approximate height: 28px)
+      doc.roundedRect(margin, tableTopY, contentWidth, 28, 6)
+         .fillColor('#f8fafc').fill();
+      // Draw a solid rect over the bottom corners to make them square
+      doc.rect(margin, tableTopY + 14, contentWidth, 14)
+         .fillColor('#f8fafc').fill();
+
+      // Reset y and x for the table text
+      doc.y = tableTopY;
+      doc.x = margin;
+
       await doc.table(tableData, {
-        prepareHeader: () => doc.font('Helvetica-Bold').fontSize(9).fillColor('#6b7280'),
+        prepareHeader: () => doc.font('Helvetica-Bold').fontSize(8.5).fillColor('#6b7280'),
         prepareRow: () => doc.font('Helvetica').fontSize(9.5).fillColor('#111827'),
+        padding: 10,
+        divider: {
+          header: { disabled: false, width: 1, opacity: 1, color: '#e2e8f0' },
+          horizontal: { disabled: false, width: 1, opacity: 1, color: '#e2e8f0' }
+        }
       });
+      
+      const tableBottomY = doc.y;
+
+      // Draw rounded border around the table tightly (without extra empty padding)
+      doc.roundedRect(margin - 1, tableTopY - 1, contentWidth + 2, tableBottomY - tableTopY + 2, 6)
+         .strokeColor('#e2e8f0').lineWidth(1).stroke();
+      
+      // Update doc.y to after the table border
+      doc.y = tableBottomY + 20;
 
       // ──────────────────────────────────────────
-      // 5. TOTALS – right-aligned box
+      // 5. TOTALS – separate card UI
       // ──────────────────────────────────────────
       const totalAmount = order.totalAmount || order.amount || 0;
-      const totalsBoxW = 240;
+      const totalsBoxW = 280;
       const totalsBoxX = pageWidth - margin - totalsBoxW;
-      let totalsY = doc.y + 18;
-
-      const drawTotalsRow = (label, value, bold = false, color = '#111827') => {
-        doc.fontSize(9.5)
-           .fillColor('#374151').font(bold ? 'Helvetica-Bold' : 'Helvetica')
-           .text(label, totalsBoxX, totalsY, { width: 130 });
-        doc.fontSize(9.5)
-           .fillColor(color).font(bold ? 'Helvetica-Bold' : 'Helvetica')
-           .text(value, totalsBoxX + 130, totalsY, { width: 110, align: 'right' });
-        totalsY += 18;
-      };
-
+      
+      let totalsRows = [];
       if (order.subtotal !== undefined) {
-        drawTotalsRow('Subtotal', `Rs. ${order.subtotal.toFixed(2)}`);
-        drawTotalsRow('CGST (9%)', `Rs. ${(order.gstAmount / 2).toFixed(2)}`, false, '#0f766e');
-        drawTotalsRow('SGST (9%)', `Rs. ${(order.gstAmount / 2).toFixed(2)}`, false, '#0f766e');
+        totalsRows.push({ label: 'Subtotal', value: `Rs. ${order.subtotal.toFixed(2)}`, color: '#6b7280' });
+        totalsRows.push({ label: 'CGST (9%)', value: `Rs. ${(order.gstAmount / 2).toFixed(2)}`, color: '#6b7280' });
+        totalsRows.push({ label: 'SGST (9%)', value: `Rs. ${(order.gstAmount / 2).toFixed(2)}`, color: '#6b7280' });
       } else {
-        drawTotalsRow('Subtotal', `Rs. ${totalAmount.toFixed(2)}`);
+        totalsRows.push({ label: 'Subtotal', value: `Rs. ${totalAmount.toFixed(2)}`, color: '#6b7280' });
       }
 
-      // dashed divider
-      doc.moveTo(totalsBoxX, totalsY - 4)
-         .lineTo(totalsBoxX + totalsBoxW, totalsY - 4)
-         .dash(3, { space: 3 }).strokeColor('#d1d5db').lineWidth(0.8).stroke();
+      const boxPadding = 20;
+      const rowHeight = 22;
+      const dividerSpace = 15;
+      const grandTotalHeight = 30;
+      
+      const boxHeight = (totalsRows.length * rowHeight) + dividerSpace + grandTotalHeight + boxPadding * 2 - 10;
+      
+      let totalsY = doc.y + 30;
+
+      // Draw totals card background and border
+      doc.roundedRect(totalsBoxX, totalsY, totalsBoxW, boxHeight, 8)
+         .fillColor('#f8fafc').fillAndStroke('#f8fafc', '#e2e8f0')
+         .strokeColor('#e2e8f0').lineWidth(1).stroke();
+
+      totalsY += boxPadding;
+
+      const drawTotalsRow = (label, value, color) => {
+        doc.fontSize(10.5)
+           .fillColor(color).font('Helvetica')
+           .text(label, totalsBoxX + boxPadding, totalsY, { width: 140 });
+        doc.fontSize(10.5)
+           .fillColor('#111827').font('Helvetica')
+           .text(value, totalsBoxX + 140, totalsY, { width: totalsBoxW - 140 - boxPadding, align: 'right' });
+        totalsY += rowHeight;
+      };
+
+      totalsRows.forEach(row => drawTotalsRow(row.label, row.value, row.color));
+
+      // Dashed divider line
+      totalsY += 2;
+      doc.moveTo(totalsBoxX + boxPadding, totalsY)
+         .lineTo(totalsBoxX + totalsBoxW - boxPadding, totalsY)
+         .dash(3, { space: 4 }).strokeColor('#cbd5e1').lineWidth(1).stroke();
       doc.undash();
-      totalsY += 6;
+      totalsY += 15;
 
       // Grand Total row
-      doc.fontSize(11).fillColor('#111827').font('Helvetica-Bold')
-         .text('Grand Total', totalsBoxX, totalsY, { width: 130 });
-      doc.fontSize(11).fillColor('#0f766e').font('Helvetica-Bold')
-         .text(`Rs. ${totalAmount.toFixed(2)}`, totalsBoxX + 130, totalsY, { width: 110, align: 'right' });
+      doc.fontSize(16).fillColor('#111827').font('Helvetica-Bold')
+         .text('Grand Total', totalsBoxX + boxPadding, totalsY + 2, { width: 140 });
+      doc.fontSize(16).fillColor('#0ea5e9').font('Helvetica-Bold')
+         .text(`Rs. ${totalAmount.toFixed(2)}`, totalsBoxX + 140, totalsY, { width: totalsBoxW - 140 - boxPadding, align: 'right' });
 
 
       // ──────────────────────────────────────────
